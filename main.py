@@ -28,7 +28,7 @@ MAP_TILE_HEIGHT = 10
 MAP_COORD_WIDTH = MAP_TILE_WIDTH * TILE_SIZE
 MAP_COORD_HEIGHT = MAP_TILE_HEIGHT * TILE_SIZE
 
-tilemap = [[choices(tiles, weights=weights)[0] for _ in range(MAP_TILE_WIDTH)] for _ in range(MAP_TILE_HEIGHT)]
+tile_map = [[choices(tiles, weights=weights)[0] for _ in range(MAP_TILE_WIDTH)] for _ in range(MAP_TILE_HEIGHT)]
 
 game_window = pyglet.window.Window(width=MAP_TILE_WIDTH * TILE_SIZE, height=MAP_TILE_HEIGHT * TILE_SIZE)
 
@@ -39,9 +39,9 @@ foreground = pyglet.graphics.OrderedGroup(1)
 
 
 def tile_to_coord(i_, j_):
-    x = j_ * TILE_SIZE
-    y = (MAP_TILE_HEIGHT - 1 - i_) * TILE_SIZE
-    return x, y
+    x_ = j_ * TILE_SIZE
+    y_ = (MAP_TILE_HEIGHT - 1 - i_) * TILE_SIZE
+    return x_, y_
 
 
 sprites = []
@@ -49,7 +49,7 @@ sprites = []
 for i in range(MAP_TILE_HEIGHT):
     for j in range(MAP_TILE_WIDTH):
         x, y = tile_to_coord(i, j)
-        sprites.append(pyglet.sprite.Sprite(img=tilemap[i][j], x=x, y=y, batch=main_batch, group=background))
+        sprites.append(pyglet.sprite.Sprite(img=tile_map[i][j], x=x, y=y, batch=main_batch, group=background))
 
 
 class Player(pyglet.sprite.Sprite):
@@ -59,7 +59,24 @@ class Player(pyglet.sprite.Sprite):
         self.key_handler = pyglet.window.key.KeyStateHandler()
         self.event_handlers = [self, self.key_handler]
 
-        self.movement_speed = 100
+        self.walking_speed = 100
+        self.running_speed = self.walking_speed * 2
+
+        print(self.width)
+
+    def check_bounds(self):
+        min_x = self.width // 2
+        min_y = self.height // 2
+        max_x = MAP_COORD_WIDTH - self.width // 2
+        max_y = MAP_COORD_HEIGHT - self.height // 2
+        if self.x < min_x:
+            self.x = min_x
+        elif self.x > max_x:
+            self.x = max_x
+        if self.y < min_y:
+            self.y = min_y
+        elif self.y > max_y:
+            self.y = max_y
 
     def object_update(self, dt):
         controls_raw = {
@@ -67,17 +84,25 @@ class Player(pyglet.sprite.Sprite):
             "left": "A",
             "right": "D",
             "down": "S",
+            "run": "LSHIFT"
         }
         control = {dict_key: getattr(pyglet.window.key, dict_value) for dict_key, dict_value in controls_raw.items()}
 
+        if self.key_handler[control["run"]]:
+            movement_speed = self.running_speed
+        else:
+            movement_speed = self.walking_speed
+
         if self.key_handler[control["left"]]:
-            self.x -= self.movement_speed * dt
+            self.x -= movement_speed * dt
         if self.key_handler[control["right"]]:
-            self.x += self.movement_speed * dt
+            self.x += movement_speed * dt
         if self.key_handler[control["up"]]:
-            self.y += self.movement_speed * dt
+            self.y += movement_speed * dt
         if self.key_handler[control["down"]]:
-            self.y -= self.movement_speed * dt
+            self.y -= movement_speed * dt
+
+        self.check_bounds()
 
 
 player = Player(img=player_image, x=MAP_COORD_WIDTH // 2, y=MAP_COORD_HEIGHT // 2, batch=main_batch, group=foreground)
@@ -102,7 +127,6 @@ def update(dt):
 
 def main():
     pyglet.clock.schedule_interval(update, 1 / 60.0)
-
     pyglet.app.run()
 
 
