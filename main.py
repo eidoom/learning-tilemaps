@@ -20,11 +20,11 @@ player_image = pyglet.resource.image("player.png")
 centre_image(player_image)
 
 tiles = [red_tile, green_tile, blue_tile, black_tile]
-weights = [10, 10, 20, 10]
+weights = [5, 20, 30, 5]
 
 TILE_SIZE = 40
-MAP_TILE_WIDTH = 16
-MAP_TILE_HEIGHT = 10
+MAP_TILE_WIDTH = 16*2
+MAP_TILE_HEIGHT = 10*2
 MAP_COORD_WIDTH = MAP_TILE_WIDTH * TILE_SIZE
 MAP_COORD_HEIGHT = MAP_TILE_HEIGHT * TILE_SIZE
 
