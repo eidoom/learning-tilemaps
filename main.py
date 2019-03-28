@@ -23,14 +23,19 @@ tiles = [red_tile, green_tile, blue_tile, black_tile]
 weights = [5, 20, 30, 5]
 
 TILE_SIZE = 40
-MAP_TILE_WIDTH = 16*2
-MAP_TILE_HEIGHT = 10*2
-MAP_COORD_WIDTH = MAP_TILE_WIDTH * TILE_SIZE
-MAP_COORD_HEIGHT = MAP_TILE_HEIGHT * TILE_SIZE
+MAP_TILE_WIDTH = 16 * 2
+MAP_TILE_HEIGHT = 10 * 2
+MAP_PIXEL_WIDTH = MAP_TILE_WIDTH * TILE_SIZE
+MAP_PIXEL_HEIGHT = MAP_TILE_HEIGHT * TILE_SIZE
 
 tile_map = [[choices(tiles, weights=weights)[0] for _ in range(MAP_TILE_WIDTH)] for _ in range(MAP_TILE_HEIGHT)]
 
-game_window = pyglet.window.Window(width=MAP_TILE_WIDTH * TILE_SIZE, height=MAP_TILE_HEIGHT * TILE_SIZE)
+WINDOW_WIDTH = 500
+WINDOW_HALF_WIDTH = WINDOW_WIDTH // 2
+WINDOW_HEIGHT = 500
+WINDOW_HALF_HEIGHT = WINDOW_HEIGHT // 2
+
+game_window = pyglet.window.Window(width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
 
 main_batch = pyglet.graphics.Batch()
 
@@ -38,7 +43,7 @@ background = pyglet.graphics.OrderedGroup(0)
 foreground = pyglet.graphics.OrderedGroup(1)
 
 
-def tile_to_coord(i_, j_):
+def tiles_to_pixels(i_, j_):
     x_ = j_ * TILE_SIZE
     y_ = (MAP_TILE_HEIGHT - 1 - i_) * TILE_SIZE
     return x_, y_
@@ -48,7 +53,7 @@ sprites = []
 
 for i in range(MAP_TILE_HEIGHT):
     for j in range(MAP_TILE_WIDTH):
-        x, y = tile_to_coord(i, j)
+        x, y = tiles_to_pixels(i, j)
         sprites.append(pyglet.sprite.Sprite(img=tile_map[i][j], x=x, y=y, batch=main_batch, group=background))
 
 
@@ -62,13 +67,11 @@ class Player(pyglet.sprite.Sprite):
         self.walking_speed = 100
         self.running_speed = self.walking_speed * 2
 
-        print(self.width)
-
     def check_bounds(self):
         min_x = self.width // 2
         min_y = self.height // 2
-        max_x = MAP_COORD_WIDTH - self.width // 2
-        max_y = MAP_COORD_HEIGHT - self.height // 2
+        max_x = MAP_PIXEL_WIDTH - self.width // 2
+        max_y = MAP_PIXEL_HEIGHT - self.height // 2
         if self.x < min_x:
             self.x = min_x
         elif self.x > max_x:
@@ -105,7 +108,23 @@ class Player(pyglet.sprite.Sprite):
         self.check_bounds()
 
 
-player = Player(img=player_image, x=MAP_COORD_WIDTH // 2, y=MAP_COORD_HEIGHT // 2, batch=main_batch, group=foreground)
+# class Camera:
+#     def __init__(self):
+#         self.x = 0
+#         self.y = 0
+#
+#     def apply(self, target, dt):
+#         target.x += self.x * dt
+#         target.y += self.y * dt
+#
+#     def update(self, target):
+#         self.x = WINDOW_HALF_WIDTH - target.x
+#         self.y = WINDOW_HALF_HEIGHT - target.y
+#
+#
+# camera = Camera()
+
+player = Player(img=player_image, x=WINDOW_HALF_WIDTH, y=WINDOW_HALF_HEIGHT, batch=main_batch, group=foreground)
 
 game_objects = [player]
 
@@ -121,8 +140,13 @@ def on_draw():
 
 
 def update(dt):
+    # camera.update(player)
+
     for game_object_ in game_objects:
         game_object_.object_update(dt)
+
+    # for sprite in sprites:
+    #     camera.apply(sprite, dt)
 
 
 def main():
