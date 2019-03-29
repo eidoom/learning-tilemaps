@@ -15,18 +15,19 @@ red_tile = pyglet.resource.image("red.png")
 green_tile = pyglet.resource.image("green.png")
 blue_tile = pyglet.resource.image("blue.png")
 black_tile = pyglet.resource.image("black.png")
+sand_tile = pyglet.resource.image("sand.png")
 player_image = pyglet.resource.image("player.png")
 
 centre_image(player_image)
 
-tiles = [red_tile, green_tile, blue_tile, black_tile]
-weights = [1, 10, 2, 1]
-traversability = {red_tile: True, green_tile: True, blue_tile: False, black_tile: True}
+tiles = [red_tile, green_tile, blue_tile, black_tile, sand_tile]
+weights = [1, 20, 3, 1, 0]
+traversability = {red_tile: False, green_tile: True, blue_tile: False, black_tile: False, sand_tile: True}
 
 TILE_SIZE = 40
 HALF_TILE_SIZE = TILE_SIZE // 2
-MAP_TILE_WIDTH = 30
-MAP_TILE_HEIGHT = 20
+MAP_TILE_WIDTH = 32
+MAP_TILE_HEIGHT = 18
 MAP_TILE_HALF_WIDTH = MAP_TILE_WIDTH // 2
 MAP_TILE_HALF_HEIGHT = MAP_TILE_HEIGHT // 2
 MAP_PIXEL_WIDTH = MAP_TILE_WIDTH * TILE_SIZE
@@ -37,9 +38,22 @@ MAP_PIXEL_HALF_HEIGHT = MAP_PIXEL_HEIGHT // 2
 tile_map = [[choices(tiles, weights=weights)[0] for _ in range(MAP_TILE_WIDTH)] for _ in range(MAP_TILE_HEIGHT)]
 # tile_map = [[red_tile for _ in range(MAP_TILE_WIDTH)] for _ in range(MAP_TILE_HEIGHT)]
 tile_map[MAP_TILE_HALF_HEIGHT][MAP_TILE_HALF_WIDTH] = green_tile
-tile_map[MAP_TILE_HALF_HEIGHT][MAP_TILE_HALF_WIDTH-1] = green_tile
-tile_map[MAP_TILE_HALF_HEIGHT-1][MAP_TILE_HALF_WIDTH] = green_tile
-tile_map[MAP_TILE_HALF_HEIGHT-1][MAP_TILE_HALF_WIDTH-1] = green_tile
+tile_map[MAP_TILE_HALF_HEIGHT][MAP_TILE_HALF_WIDTH - 1] = green_tile
+tile_map[MAP_TILE_HALF_HEIGHT - 1][MAP_TILE_HALF_WIDTH] = green_tile
+tile_map[MAP_TILE_HALF_HEIGHT - 1][MAP_TILE_HALF_WIDTH - 1] = green_tile
+
+for i in range(MAP_TILE_HEIGHT):
+    for j in range(MAP_TILE_WIDTH):
+        if tile_map[i][j] == blue_tile:
+            try:
+                for ii in (i - 1, i + 1):
+                    if not tile_map[ii][j] == blue_tile:
+                        tile_map[ii][j] = sand_tile
+                for jj in (j - 1, j + 1):
+                    if not tile_map[i][jj] == blue_tile:
+                        tile_map[i][jj] = sand_tile
+            except IndexError:
+                pass
 
 WINDOW_WIDTH = 500
 WINDOW_HEIGHT = 500
