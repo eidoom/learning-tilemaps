@@ -49,15 +49,25 @@ def tiles_to_pixels(i_, j_):
     return x_, y_
 
 
-sprites = []
+class Entity(pyglet.sprite.Sprite):
+    def __init__(self, map_x=0, map_y=0, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.map_x = map_x
+        self.map_y = map_y
+        self.x = self.map_x
+        self.y = self.map_y
+
+
+tile_sprites = []
 
 for i in range(MAP_TILE_HEIGHT):
     for j in range(MAP_TILE_WIDTH):
         x, y = tiles_to_pixels(i, j)
-        sprites.append(pyglet.sprite.Sprite(img=tile_map[i][j], x=x, y=y, batch=main_batch, group=background))
+        tile_sprites.append(Entity(img=tile_map[i][j], map_x=x, map_y=y, batch=main_batch, group=background))
 
 
-class Player(pyglet.sprite.Sprite):
+class Player(Entity):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -67,19 +77,19 @@ class Player(pyglet.sprite.Sprite):
         self.walking_speed = 100
         self.running_speed = self.walking_speed * 2
 
-    def check_bounds(self):
+    def check_map_bounds(self):
         min_x = self.width // 2
         min_y = self.height // 2
         max_x = MAP_PIXEL_WIDTH - self.width // 2
         max_y = MAP_PIXEL_HEIGHT - self.height // 2
-        if self.x < min_x:
-            self.x = min_x
-        elif self.x > max_x:
-            self.x = max_x
-        if self.y < min_y:
-            self.y = min_y
-        elif self.y > max_y:
-            self.y = max_y
+        if self.map_x < min_x:
+            self.map_x = min_x
+        elif self.map_x > max_x:
+            self.map_x = max_x
+        if self.map_y < min_y:
+            self.map_y = min_y
+        elif self.map_y > max_y:
+            self.map_y = max_y
 
     def object_update(self, dt):
         controls_raw = {
@@ -97,34 +107,35 @@ class Player(pyglet.sprite.Sprite):
             movement_speed = self.walking_speed
 
         if self.key_handler[control["left"]]:
-            self.x -= movement_speed * dt
+            self.map_x -= movement_speed * dt
         if self.key_handler[control["right"]]:
-            self.x += movement_speed * dt
+            self.map_x += movement_speed * dt
         if self.key_handler[control["up"]]:
-            self.y += movement_speed * dt
+            self.map_y += movement_speed * dt
         if self.key_handler[control["down"]]:
-            self.y -= movement_speed * dt
+            self.map_y -= movement_speed * dt
 
-        self.check_bounds()
+        self.check_map_bounds()
 
 
-# class Camera:
-#     def __init__(self):
-#         self.x = 0
-#         self.y = 0
-#
-#     def apply(self, target, dt):
-#         target.x += self.x * dt
-#         target.y += self.y * dt
-#
-#     def update(self, target):
-#         self.x = WINDOW_HALF_WIDTH - target.x
-#         self.y = WINDOW_HALF_HEIGHT - target.y
-#
-#
-# camera = Camera()
+class Camera:
+    def __init__(self):
+        self.x = 0
+        self.y = 0
 
-player = Player(img=player_image, x=WINDOW_HALF_WIDTH, y=WINDOW_HALF_HEIGHT, batch=main_batch, group=foreground)
+    def apply(self, target):
+        target.x = target.map_x + self.x
+        target.y = target.map_y + self.y
+
+    def update(self, target):
+        self.x = WINDOW_HALF_WIDTH - target.map_x
+        self.y = WINDOW_HALF_HEIGHT - target.map_y
+        print(self.x)
+
+
+camera = Camera()
+
+player = Player(img=player_image, map_x=WINDOW_HALF_WIDTH, map_y=WINDOW_HALF_HEIGHT, batch=main_batch, group=foreground)
 
 game_objects = [player]
 
@@ -140,13 +151,13 @@ def on_draw():
 
 
 def update(dt):
-    # camera.update(player)
+    camera.update(player)
 
     for game_object_ in game_objects:
         game_object_.object_update(dt)
 
-    # for sprite in sprites:
-    #     camera.apply(sprite, dt)
+    for sprite in tile_sprites:
+        camera.apply(sprite)
 
 
 def main():
