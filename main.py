@@ -23,8 +23,8 @@ tiles = [red_tile, green_tile, blue_tile, black_tile]
 weights = [5, 20, 30, 5]
 
 TILE_SIZE = 40
-MAP_TILE_WIDTH = 16 * 2
-MAP_TILE_HEIGHT = 10 * 2
+MAP_TILE_WIDTH = 20
+MAP_TILE_HEIGHT = 20
 MAP_PIXEL_WIDTH = MAP_TILE_WIDTH * TILE_SIZE
 MAP_PIXEL_HEIGHT = MAP_TILE_HEIGHT * TILE_SIZE
 MAP_PIXEL_HALF_WIDTH = MAP_PIXEL_WIDTH // 2
@@ -120,16 +120,32 @@ class Player(PositionalObject):
 
 class Camera:
     def __init__(self):
+        # Camera position is coordinate of bottom left of visible rectangle.
         self.x = 0
         self.y = 0
 
     def apply(self, target):
-        target.x = target.map_x + self.x
-        target.y = target.map_y + self.y
+        target.x = target.map_x - self.x
+        target.y = target.map_y - self.y
 
     def update(self, target):
-        self.x = WINDOW_HALF_WIDTH - target.map_x
-        self.y = WINDOW_HALF_HEIGHT - target.map_y
+        if target.map_x < WINDOW_HALF_WIDTH:
+            self.x = 0
+            target.x = target.map_x - self.x
+        elif target.map_x > MAP_PIXEL_WIDTH - WINDOW_HALF_WIDTH:
+            self.x = MAP_PIXEL_WIDTH - WINDOW_WIDTH
+            target.x = target.map_x - self.x
+        else:
+            self.x = target.map_x - WINDOW_HALF_WIDTH
+
+        if target.map_y < WINDOW_HALF_HEIGHT:
+            self.y = 0
+            target.y = target.map_y - self.y
+        elif target.map_y > MAP_PIXEL_HEIGHT - WINDOW_HALF_HEIGHT:
+            self.y = MAP_PIXEL_HEIGHT - WINDOW_HEIGHT
+            target.y = target.map_y - self.y
+        else:
+            self.y = target.map_y - WINDOW_HALF_HEIGHT
 
 
 camera = Camera()
@@ -161,7 +177,7 @@ def update(dt):
 
 
 def main():
-    pyglet.clock.schedule_interval(update, 1 / 60.0)
+    pyglet.clock.schedule_interval(update, 1 / 120.0)
     pyglet.app.run()
 
 
