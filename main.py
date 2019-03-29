@@ -20,17 +20,26 @@ player_image = pyglet.resource.image("player.png")
 centre_image(player_image)
 
 tiles = [red_tile, green_tile, blue_tile, black_tile]
-weights = [5, 20, 30, 5]
+weights = [1, 10, 2, 1]
+traversability = {red_tile: True, green_tile: True, blue_tile: False, black_tile: True}
 
 TILE_SIZE = 40
-MAP_TILE_WIDTH = 20
+HALF_TILE_SIZE = TILE_SIZE // 2
+MAP_TILE_WIDTH = 30
 MAP_TILE_HEIGHT = 20
+MAP_TILE_HALF_WIDTH = MAP_TILE_WIDTH // 2
+MAP_TILE_HALF_HEIGHT = MAP_TILE_HEIGHT // 2
 MAP_PIXEL_WIDTH = MAP_TILE_WIDTH * TILE_SIZE
 MAP_PIXEL_HEIGHT = MAP_TILE_HEIGHT * TILE_SIZE
 MAP_PIXEL_HALF_WIDTH = MAP_PIXEL_WIDTH // 2
 MAP_PIXEL_HALF_HEIGHT = MAP_PIXEL_HEIGHT // 2
 
 tile_map = [[choices(tiles, weights=weights)[0] for _ in range(MAP_TILE_WIDTH)] for _ in range(MAP_TILE_HEIGHT)]
+# tile_map = [[red_tile for _ in range(MAP_TILE_WIDTH)] for _ in range(MAP_TILE_HEIGHT)]
+tile_map[MAP_TILE_HALF_HEIGHT][MAP_TILE_HALF_WIDTH] = green_tile
+tile_map[MAP_TILE_HALF_HEIGHT][MAP_TILE_HALF_WIDTH-1] = green_tile
+tile_map[MAP_TILE_HALF_HEIGHT-1][MAP_TILE_HALF_WIDTH] = green_tile
+tile_map[MAP_TILE_HALF_HEIGHT-1][MAP_TILE_HALF_WIDTH-1] = green_tile
 
 WINDOW_WIDTH = 500
 WINDOW_HEIGHT = 500
@@ -59,13 +68,27 @@ class PositionalObject(pyglet.sprite.Sprite):
         self.map_x = map_x
         self.map_y = map_y
 
+        self.half_width = self.width // 2
+        self.half_height = self.height // 2
+
+
+class MapObject(PositionalObject):
+    def __init__(self, traversable=True, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.traversable = traversable
+
 
 tile_sprites = []
 
 for i in range(MAP_TILE_HEIGHT):
     for j in range(MAP_TILE_WIDTH):
         x, y = tiles_to_pixels(i, j)
-        tile_sprites.append(PositionalObject(img=tile_map[i][j], map_x=x, map_y=y, batch=main_batch, group=background))
+        tile = tile_map[i][j]
+        tile_sprites.append(MapObject(
+            img=tile, traversable=traversability[tile], map_x=x, map_y=y, batch=main_batch, group=background))
+
+map_objects = tile_sprites
 
 
 class Player(PositionalObject):
@@ -79,10 +102,10 @@ class Player(PositionalObject):
         self.running_speed = self.walking_speed * 2
 
     def check_map_bounds(self):
-        min_x = self.width // 2
-        min_y = self.height // 2
-        max_x = MAP_PIXEL_WIDTH - self.width // 2
-        max_y = MAP_PIXEL_HEIGHT - self.height // 2
+        min_x = self.half_width
+        min_y = self.half_height
+        max_x = MAP_PIXEL_WIDTH - self.half_width
+        max_y = MAP_PIXEL_HEIGHT - self.half_height
         if self.map_x < min_x:
             self.map_x = min_x
         elif self.map_x > max_x:
@@ -91,6 +114,27 @@ class Player(PositionalObject):
             self.map_y = min_y
         elif self.map_y > max_y:
             self.map_y = max_y
+
+    def check_traversability(self):
+        for obj in map_objects:
+            left = obj.map_x - self.half_width
+            right = obj.map_x + obj.width + self.half_width
+            bottom = obj.map_y - self.half_height
+            top = obj.map_y + obj.height + self.half_height
+            if all([left < self.map_x < right, bottom < self.map_y < top, not obj.traversable]):
+
+                border = 10
+                if bottom + border < self.map_y < top - border:
+                    if self.map_x < obj.map_x + obj.half_width:
+                        self.map_x = left
+                    elif self.map_x > obj.map_x + obj.half_width:
+                        self.map_x = right
+
+                elif left + border < self.map_x < right - border:
+                    if self.map_y < obj.map_y + obj.half_height:
+                        self.map_y = bottom
+                    elif self.map_y > obj.map_y + obj.half_height:
+                        self.map_y = top
 
     def object_update(self, dt):
         controls_raw = {
@@ -117,6 +161,7 @@ class Player(PositionalObject):
             self.map_y -= movement_speed * dt
 
         self.check_map_bounds()
+        self.check_traversability()
 
 
 class Camera:
@@ -178,8 +223,8 @@ def update(dt):
     for game_object_ in game_objects:
         game_object_.object_update(dt)
 
-    for sprite in tile_sprites:
-        camera.apply(sprite)
+    for object_ in map_objects:
+        camera.apply(object_)
 
 
 def main():
