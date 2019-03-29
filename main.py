@@ -34,10 +34,11 @@ tile_map = [[choices(tiles, weights=weights)[0] for _ in range(MAP_TILE_WIDTH)] 
 
 WINDOW_WIDTH = 500
 WINDOW_HEIGHT = 500
-WINDOW_HALF_WIDTH = WINDOW_WIDTH // 2
-WINDOW_HALF_HEIGHT = WINDOW_HEIGHT // 2
 
-game_window = pyglet.window.Window(width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
+game_window = pyglet.window.Window(width=WINDOW_WIDTH, height=WINDOW_HEIGHT, resizable=True, caption="Tile map game")
+game_window.set_maximum_size(MAP_PIXEL_WIDTH, MAP_PIXEL_HEIGHT)
+game_window.set_minimum_size(*[TILE_SIZE * 3] * 2)
+game_window.set_icon(player_image)
 
 main_batch = pyglet.graphics.Batch()
 
@@ -129,28 +130,28 @@ class Camera:
         target.y = target.map_y - self.y
 
     def update(self, target):
-        if target.map_x < WINDOW_HALF_WIDTH:
+        if target.map_x < game_window.width // 2:
             self.x = 0
             target.x = target.map_x - self.x
-        elif target.map_x > MAP_PIXEL_WIDTH - WINDOW_HALF_WIDTH:
-            self.x = MAP_PIXEL_WIDTH - WINDOW_WIDTH
+        elif target.map_x > MAP_PIXEL_WIDTH - game_window.width // 2:
+            self.x = MAP_PIXEL_WIDTH - game_window.width
             target.x = target.map_x - self.x
         else:
-            self.x = target.map_x - WINDOW_HALF_WIDTH
+            self.x = target.map_x - game_window.width // 2
 
-        if target.map_y < WINDOW_HALF_HEIGHT:
+        if target.map_y < game_window.height // 2:
             self.y = 0
             target.y = target.map_y - self.y
-        elif target.map_y > MAP_PIXEL_HEIGHT - WINDOW_HALF_HEIGHT:
-            self.y = MAP_PIXEL_HEIGHT - WINDOW_HEIGHT
+        elif target.map_y > MAP_PIXEL_HEIGHT - game_window.height // 2:
+            self.y = MAP_PIXEL_HEIGHT - game_window.height
             target.y = target.map_y - self.y
         else:
-            self.y = target.map_y - WINDOW_HALF_HEIGHT
+            self.y = target.map_y - game_window.height // 2
 
 
 camera = Camera()
 
-player = Player(img=player_image, x=WINDOW_HALF_WIDTH, y=WINDOW_HALF_HEIGHT, map_x=MAP_PIXEL_HALF_WIDTH,
+player = Player(img=player_image, x=game_window.width // 2, y=game_window.height // 2, map_x=MAP_PIXEL_HALF_WIDTH,
                 map_y=MAP_PIXEL_HALF_HEIGHT, batch=main_batch, group=foreground)
 
 game_objects = [player]
@@ -158,6 +159,11 @@ game_objects = [player]
 for game_object in game_objects:
     for handler in game_object.event_handlers:
         game_window.push_handlers(handler)
+
+
+# @game_window.event
+# def on_resize(width, height):
+#     camera.apply(player)
 
 
 @game_window.event
