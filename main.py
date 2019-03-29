@@ -27,12 +27,14 @@ MAP_TILE_WIDTH = 16 * 2
 MAP_TILE_HEIGHT = 10 * 2
 MAP_PIXEL_WIDTH = MAP_TILE_WIDTH * TILE_SIZE
 MAP_PIXEL_HEIGHT = MAP_TILE_HEIGHT * TILE_SIZE
+MAP_PIXEL_HALF_WIDTH = MAP_PIXEL_WIDTH // 2
+MAP_PIXEL_HALF_HEIGHT = MAP_PIXEL_HEIGHT // 2
 
 tile_map = [[choices(tiles, weights=weights)[0] for _ in range(MAP_TILE_WIDTH)] for _ in range(MAP_TILE_HEIGHT)]
 
 WINDOW_WIDTH = 500
-WINDOW_HALF_WIDTH = WINDOW_WIDTH // 2
 WINDOW_HEIGHT = 500
+WINDOW_HALF_WIDTH = WINDOW_WIDTH // 2
 WINDOW_HALF_HEIGHT = WINDOW_HEIGHT // 2
 
 game_window = pyglet.window.Window(width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
@@ -49,14 +51,12 @@ def tiles_to_pixels(i_, j_):
     return x_, y_
 
 
-class Entity(pyglet.sprite.Sprite):
+class PositionalObject(pyglet.sprite.Sprite):
     def __init__(self, map_x=0, map_y=0, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.map_x = map_x
         self.map_y = map_y
-        self.x = self.map_x
-        self.y = self.map_y
 
 
 tile_sprites = []
@@ -64,10 +64,10 @@ tile_sprites = []
 for i in range(MAP_TILE_HEIGHT):
     for j in range(MAP_TILE_WIDTH):
         x, y = tiles_to_pixels(i, j)
-        tile_sprites.append(Entity(img=tile_map[i][j], map_x=x, map_y=y, batch=main_batch, group=background))
+        tile_sprites.append(PositionalObject(img=tile_map[i][j], map_x=x, map_y=y, batch=main_batch, group=background))
 
 
-class Player(Entity):
+class Player(PositionalObject):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -130,12 +130,12 @@ class Camera:
     def update(self, target):
         self.x = WINDOW_HALF_WIDTH - target.map_x
         self.y = WINDOW_HALF_HEIGHT - target.map_y
-        print(self.x)
 
 
 camera = Camera()
 
-player = Player(img=player_image, map_x=WINDOW_HALF_WIDTH, map_y=WINDOW_HALF_HEIGHT, batch=main_batch, group=foreground)
+player = Player(img=player_image, x=WINDOW_HALF_WIDTH, y=WINDOW_HALF_HEIGHT, map_x=MAP_PIXEL_HALF_WIDTH,
+                map_y=MAP_PIXEL_HALF_HEIGHT, batch=main_batch, group=foreground)
 
 game_objects = [player]
 
