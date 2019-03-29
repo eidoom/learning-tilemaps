@@ -1,4 +1,4 @@
-from random import choices
+from random import choices, randrange
 
 import pyglet
 
@@ -16,6 +16,8 @@ green_tile = pyglet.resource.image("green.png")
 blue_tile = pyglet.resource.image("blue.png")
 black_tile = pyglet.resource.image("black.png")
 sand_tile = pyglet.resource.image("sand.png")
+tree = pyglet.resource.image("tree.png")
+stone = pyglet.resource.image("stone.png")
 player_image = pyglet.resource.image("player.png")
 
 centre_image(player_image)
@@ -93,16 +95,22 @@ class MapObject(PositionalObject):
         self.traversable = traversable
 
 
-tile_sprites = []
+map_objects = []
 
 for i in range(MAP_TILE_HEIGHT):
     for j in range(MAP_TILE_WIDTH):
         x, y = tiles_to_pixels(i, j)
         tile = tile_map[i][j]
-        tile_sprites.append(MapObject(
+        map_objects.append(MapObject(
             img=tile, traversable=traversability[tile], map_x=x, map_y=y, batch=main_batch, group=background))
-
-map_objects = tile_sprites
+        if tile in (sand_tile, green_tile) and choices([True, False], weights=[1, 10])[0]:
+            map_objects.append(MapObject(
+                img=tree, traversable=False, map_x=x + randrange(0, tile.width),
+                map_y=y + randrange(0, tile.height), batch=main_batch, group=foreground))
+        if tile in (sand_tile, black_tile, green_tile, red_tile) and choices([True, False], weights=[1, 10])[0]:
+            map_objects.append(MapObject(
+                img=stone, traversable=True, map_x=x + randrange(0, tile.width),
+                map_y=y + randrange(0, tile.height), batch=main_batch, group=foreground))
 
 
 class Player(PositionalObject):
@@ -135,6 +143,7 @@ class Player(PositionalObject):
             right = obj.map_x + obj.width + self.half_width
             bottom = obj.map_y - self.half_height
             top = obj.map_y + obj.height + self.half_height
+
             if all([left < self.map_x < right, bottom < self.map_y < top, not obj.traversable]):
 
                 border = 10
