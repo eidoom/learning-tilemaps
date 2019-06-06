@@ -77,6 +77,12 @@ def tiles_to_pixels(i_, j_):
     return x_, y_
 
 
+def pixels_to_tiles(x_, y_):
+    i_ = -int((y_ // TILE_SIZE) - (MAP_TILE_HEIGHT - 1))
+    j_ = int(x_ // TILE_SIZE)
+    return i_, j_
+
+
 class PositionalObject(pyglet.sprite.Sprite):
     def __init__(self, map_x=0, map_y=0, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -95,22 +101,27 @@ class MapObject(PositionalObject):
         self.traversable = traversable
 
 
-map_objects = []
+tile_objects = []
+environment_objects = []
 
 for i in range(MAP_TILE_HEIGHT):
     for j in range(MAP_TILE_WIDTH):
         x, y = tiles_to_pixels(i, j)
         tile = tile_map[i][j]
-        map_objects.append(MapObject(
+        tile_objects.append(MapObject(
             img=tile, traversable=traversability[tile], map_x=x, map_y=y, batch=main_batch, group=background))
         if tile in (sand_tile, green_tile) and choices([True, False], weights=[1, 10])[0]:
-            map_objects.append(MapObject(
+            environment_objects.append(MapObject(
                 img=tree, traversable=False, map_x=x + randrange(0, tile.width),
                 map_y=y + randrange(0, tile.height), batch=main_batch, group=foreground))
         if tile in (sand_tile, black_tile, green_tile, red_tile) and choices([True, False], weights=[1, 10])[0]:
-            map_objects.append(MapObject(
+            environment_objects.append(MapObject(
                 img=stone, traversable=True, map_x=x + randrange(0, tile.width),
                 map_y=y + randrange(0, tile.height), batch=main_batch, group=foreground))
+
+
+def nested_ref_to_list_ref(i_, j_):
+    return i_ * MAP_TILE_WIDTH + j_
 
 
 class Player(PositionalObject):
@@ -138,7 +149,19 @@ class Player(PositionalObject):
             self.map_y = max_y
 
     def check_traversability(self):
-        for obj in map_objects:
+
+        centre_i, centre_j = pixels_to_tiles(self.map_x, self.map_y)
+
+        tiles_ = []
+
+        for i_ in (centre_i - 1, centre_i, centre_i + 1):
+            for j_ in (centre_j - 1, centre_j, centre_j + 1):
+                try:
+                    tiles_.append(tile_objects[nested_ref_to_list_ref(i_, j_)])
+                except IndexError:
+                    pass
+
+        for obj in environment_objects + tiles_:
             left = obj.map_x - self.half_width
             right = obj.map_x + obj.width + self.half_width
             bottom = obj.map_y - self.half_height
@@ -246,12 +269,15 @@ def update(dt):
     for game_object_ in game_objects:
         game_object_.object_update(dt)
 
-    for object_ in map_objects:
+    for object_ in tile_objects + environment_objects:
         camera.apply(object_)
 
 
+UPS = 24
+
+
 def main():
-    pyglet.clock.schedule_interval(update, 1 / 120.0)
+    pyglet.clock.schedule_interval(update, 1 / UPS)
     pyglet.app.run()
 
 
