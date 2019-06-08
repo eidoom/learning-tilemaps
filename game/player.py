@@ -1,9 +1,9 @@
 import pyglet
 
-from game import util, positional_object
+from game import util, character
 
 
-class Player(positional_object.PositionalObject):
+class Player(character.Character):
     def __init__(self, c_img, l_img, r_img, c_ani, l_ani, r_ani, *args, **kwargs):
         super().__init__(img=c_img, *args, **kwargs)
 
@@ -108,7 +108,7 @@ class Player(positional_object.PositionalObject):
     def on_key_release(self, symbol, modifiers):
         if symbol is self.control["run"]:
             self.movement_speed = self.walking_speed
-        if not any([self.control[key] for key in ("left", "right", "up", "down")]):
+        if not any([self.key_handler[self.control[key]] for key in ("left", "right", "up", "down")]):
             if symbol is self.control["right"]:
                 self.image = self.r_img
             if symbol is self.control["left"]:
