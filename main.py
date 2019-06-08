@@ -105,6 +105,10 @@ def update(dt):
     for object_ in tile_objects + env_objects:
         cam.apply(object_)
 
+    if True:
+        fps = pyglet.clock.get_fps()
+        print(fps)
+
 
 def main():
     pyglet.clock.schedule_interval(update, 1 / p.UPS)
