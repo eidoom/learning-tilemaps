@@ -5,7 +5,9 @@ from game import util, character
 
 class Player(character.Character):
     def __init__(self, c_img, l_img, r_img, c_ani, l_ani, r_ani, *args, **kwargs):
-        super().__init__(img=c_img, *args, **kwargs)
+        self.walking_speed = 100
+        self.running_speed = self.walking_speed * 2
+        super().__init__(img=c_img, mvmt_spd=self.walking_speed, *args, **kwargs)
 
         self.key_handler = pyglet.window.key.KeyStateHandler()
         self.event_handlers = [self, self.key_handler]
@@ -26,10 +28,6 @@ class Player(character.Character):
         self.c_ani = c_ani
         self.l_ani = l_ani
         self.r_ani = r_ani
-
-        self.walking_speed = 100
-        self.running_speed = self.walking_speed * 2
-        self.movement_speed = self.walking_speed
 
     def check_map_bounds(self, map_width, map_height):
         min_x = self.half_width
