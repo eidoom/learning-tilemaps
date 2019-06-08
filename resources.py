@@ -18,11 +18,15 @@ green_tile = pyglet.resource.image("green.png")
 blue_tile = pyglet.resource.image("blue.png")
 black_tile = pyglet.resource.image("black.png")
 sand_tile = pyglet.resource.image("sand.png")
+
+tile_imgs = [red_tile, green_tile, blue_tile, black_tile, sand_tile]
+
 tree = pyglet.resource.image("tree.png")
 stone = pyglet.resource.image("stone.png")
+
+env_imgs = [tree, stone]
+
 player_image = pyglet.resource.image("player.png")
 
 centre_image(player_image)
 
-# centre_image_horizontally(tree)
-# centre_image_horizontally(stone)

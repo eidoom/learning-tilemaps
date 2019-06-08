@@ -28,20 +28,36 @@ class Player(positional_object.PositionalObject):
         elif self.map_y > max_y:
             self.map_y = max_y
 
-    def check_traversability(self, tile_objs, env_objs):
+    def check_traversability(self, tile_objs, env_obj_dict, max_width, max_height):
 
         centre_i, centre_j = util.pixels_to_tiles(self.map_x, self.map_y)
 
         tiles = []
 
-        for i_ in (centre_i - 1, centre_i, centre_i + 1):
-            for j_ in (centre_j - 1, centre_j, centre_j + 1):
+        def add_tile(i_, j_):
+            try:
+                tiles.append(tile_objs[util.nested_ref_to_list_ref(i_, j_)])
+            except IndexError:
+                pass
+
+        for i in [centre_i + ii for ii in (-1, 1)]:
+            for j in [centre_j + jj for jj in range(-1, 2)]:
+                add_tile(i, j)
+
+        for j in [centre_j + jj for jj in (-1, 1)]:
+            add_tile(centre_i, j)
+
+        env_objs = []
+
+        for x in [int(self.map_x) + xx for xx in range(-int(self.half_width + max_width + 1), self.half_width + 1)]:
+            for y in [int(self.map_y) + yy for yy in
+                      range(-int(self.half_height + max_height + 1), self.half_height + 1)]:
                 try:
-                    tiles.append(tile_objs[util.nested_ref_to_list_ref(i_, j_)])
-                except IndexError:
+                    env_objs.append(env_obj_dict[(x, y)])
+                except KeyError:
                     pass
 
-        for obj in env_objs + tiles:
+        for obj in tiles + env_objs:
             left = obj.map_x - self.half_width
             right = obj.map_x + obj.width + self.half_width
             bottom = obj.map_y - self.half_height

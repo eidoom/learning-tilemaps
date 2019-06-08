@@ -9,11 +9,11 @@ import player
 import resources as r
 import util
 
-tiles = [r.red_tile, r.green_tile, r.blue_tile, r.black_tile, r.sand_tile]
+
 weights = [1, 20, 3, 1, 0]
 traversability = {r.red_tile: False, r.green_tile: True, r.blue_tile: False, r.black_tile: False, r.sand_tile: True}
 
-tile_map = [[choices(tiles, weights=weights)[0] for _ in range(p.MAP_TILE_WIDTH)] for _ in range(p.MAP_TILE_HEIGHT)]
+tile_map = [[choices(r.tile_imgs, weights=weights)[0] for _ in range(p.MAP_TILE_WIDTH)] for _ in range(p.MAP_TILE_HEIGHT)]
 tile_map[p.MAP_TILE_HALF_HEIGHT][p.MAP_TILE_HALF_WIDTH] = r.green_tile
 tile_map[p.MAP_TILE_HALF_HEIGHT][p.MAP_TILE_HALF_WIDTH + 1] = r.green_tile
 tile_map[p.MAP_TILE_HALF_HEIGHT - 1][p.MAP_TILE_HALF_WIDTH] = r.green_tile
@@ -45,6 +45,9 @@ foreground = pyglet.graphics.OrderedGroup(1)
 tile_objects = []
 env_objects = []
 env_obj_dict = {}
+
+max_height = max([img.height for img in r.env_imgs])
+max_width = max([img.width for img in r.env_imgs])
 
 for i in range(p.MAP_TILE_HEIGHT):
     for j in range(p.MAP_TILE_WIDTH):
@@ -97,7 +100,7 @@ def update(dt):
         game_object_.object_update(dt)
 
     player.check_map_bounds(p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
-    player.check_traversability(tile_objects, env_objects)
+    player.check_traversability(tile_objects, env_obj_dict, max_width, max_height)
 
     for object_ in tile_objects + env_objects:
         cam.apply(object_)
