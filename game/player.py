@@ -108,12 +108,13 @@ class Player(positional_object.PositionalObject):
     def on_key_release(self, symbol, modifiers):
         if symbol is self.control["run"]:
             self.movement_speed = self.walking_speed
-        if symbol is self.control["right"]:
-            self.image = self.r_img
-        if symbol is self.control["left"]:
-            self.image = self.l_img
-        if symbol in [self.control[key] for key in ("up", "down")]:
-            self.image = self.c_img
+        if not any([self.control[key] for key in ("left", "right", "up", "down")]):
+            if symbol is self.control["right"]:
+                self.image = self.r_img
+            if symbol is self.control["left"]:
+                self.image = self.l_img
+            if symbol in [self.control[key] for key in ("up", "down")]:
+                self.image = self.c_img
 
     def update_obj(self, dt):
 
