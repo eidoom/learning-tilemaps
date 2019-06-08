@@ -9,11 +9,11 @@ import player
 import resources as r
 import util
 
-
 weights = [1, 20, 3, 1, 0]
 traversability = {r.red_tile: False, r.green_tile: True, r.blue_tile: False, r.black_tile: False, r.sand_tile: True}
 
-tile_map = [[choices(r.tile_imgs, weights=weights)[0] for _ in range(p.MAP_TILE_WIDTH)] for _ in range(p.MAP_TILE_HEIGHT)]
+tile_map = [[choices(r.tile_imgs, weights=weights)[0] for _ in range(p.MAP_TILE_WIDTH)] for _ in
+            range(p.MAP_TILE_HEIGHT)]
 tile_map[p.MAP_TILE_HALF_HEIGHT][p.MAP_TILE_HALF_WIDTH] = r.green_tile
 tile_map[p.MAP_TILE_HALF_HEIGHT][p.MAP_TILE_HALF_WIDTH + 1] = r.green_tile
 tile_map[p.MAP_TILE_HALF_HEIGHT - 1][p.MAP_TILE_HALF_WIDTH] = r.green_tile
@@ -43,7 +43,6 @@ background = pyglet.graphics.OrderedGroup(0)
 foreground = pyglet.graphics.OrderedGroup(1)
 
 tile_objects = []
-env_objects = []
 env_obj_dict = {}
 
 max_height = max([img.height for img in r.env_imgs])
@@ -65,7 +64,6 @@ for i in range(p.MAP_TILE_HEIGHT):
                 obj = map_object.MapObject(img=r.stone, traversable=True, map_x=obj_x, map_y=obj_y, batch=main_batch,
                                            group=foreground)
             try:
-                env_objects.append(obj)
                 env_obj_dict.update({(obj_x, obj_y): obj})
             except NameError:
                 pass
@@ -102,7 +100,7 @@ def update(dt):
     player.check_map_bounds(p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
     player.check_traversability(tile_objects, env_obj_dict, max_width, max_height)
 
-    for object_ in tile_objects + env_objects:
+    for object_ in tile_objects + list(env_obj_dict.values()):
         cam.apply(object_)
 
     if True:
