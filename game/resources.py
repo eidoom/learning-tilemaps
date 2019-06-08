@@ -37,7 +37,7 @@ player_image, player_animation = generate_walking_animation("player.png", "playe
 player_left_image, player_left_animation = generate_walking_animation("player_left.png", "player_left_2.png")
 player_right_image, player_right_animation = generate_walking_animation("player_right.png", "player_right_2.png")
 
-
+char_npc_air = pyglet.resource.image("char_npc_air.png")
 
 if __name__ == "__main__":
     exit()

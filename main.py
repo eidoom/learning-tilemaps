@@ -2,7 +2,7 @@ from random import choices, randrange
 
 import pyglet
 
-from game import camera, util, player, map_object, resources as r
+from game import camera, util, player, map_object, resources as r, npc
 import parameters as p
 
 weights = [1, 20, 3, 1, 0]
@@ -66,22 +66,35 @@ for i in range(p.MAP_TILE_HEIGHT):
 
 cam = camera.Camera(game_window.width, game_window.height, p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
 
-player = player.Player(
+
+def generate_position():
+    return randrange(0, p.MAP_PIXEL_WIDTH), randrange(0, p.MAP_PIXEL_HEIGHT)
+
+
+ai_characters = []
+
+for _ in range(5 * p.MAP_TILE_SCALE):
+    pos = generate_position()
+    ai_characters.append(npc.NPC(img=r.char_npc_air, map_x=pos[0], map_y=pos[1], group=foreground, batch=main_batch))
+
+protagonist = player.Player(
     c_img=r.player_image, l_img=r.player_left_image, r_img=r.player_right_image,
     c_ani=r.player_animation, l_ani=r.player_left_animation, r_ani=r.player_right_animation,
     x=game_window.width // 2, y=game_window.height // 2, map_x=p.MAP_PIXEL_HALF_WIDTH, map_y=p.MAP_PIXEL_HALF_HEIGHT,
     batch=main_batch, group=foreground)
 
-game_objs = [player]
+input_objs = [protagonist]
 
-for game_obj in game_objs:
-    for handler in game_obj.event_handlers:
+for input_obj in input_objs:
+    for handler in input_obj.event_handlers:
         game_window.push_handlers(handler)
+
+dynamic_objs = input_objs + ai_characters
 
 
 # @game_window.event
 # def on_resize(width, height):
-#     cam.apply(player)
+#     cam.apply(protagonist)
 
 
 @game_window.event
@@ -91,15 +104,15 @@ def on_draw():
 
 
 def update(dt):
-    cam.update(player)
+    cam.update(protagonist)
 
-    for game_obj_ in game_objs:
-        game_obj_.update_obj(dt)
+    for dy_obj in dynamic_objs:
+        dy_obj.update_obj(dt)
+        dy_obj.check_map_bounds(p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
 
-    player.check_map_bounds(p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
-    player.check_traversability(tile_objects, env_obj_dict, max_width, max_height)
+    protagonist.check_traversability(tile_objects, env_obj_dict, max_width, max_height)
 
-    for object_ in tile_objects + list(env_obj_dict.values()):
+    for object_ in tile_objects + list(env_obj_dict.values()) + ai_characters:
         cam.apply(object_)
 
     # fps = pyglet.clock.get_fps()

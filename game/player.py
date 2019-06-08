@@ -29,20 +29,6 @@ class Player(character.Character):
         self.l_ani = l_ani
         self.r_ani = r_ani
 
-    def check_map_bounds(self, map_width, map_height):
-        min_x = self.half_width
-        min_y = self.half_height
-        max_x = map_width - self.half_width
-        max_y = map_height - self.half_height
-        if self.map_x < min_x:
-            self.map_x = min_x
-        elif self.map_x > max_x:
-            self.map_x = max_x
-        if self.map_y < min_y:
-            self.map_y = min_y
-        elif self.map_y > max_y:
-            self.map_y = max_y
-
     def check_traversability(self, tile_objs, env_obj_dict, max_width, max_height):
 
         centre_i, centre_j = util.pixels_to_tiles(self.map_x, self.map_y)
