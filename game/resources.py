@@ -28,8 +28,8 @@ sand_tile = pyglet.resource.image("tile_sand.png")
 
 tile_imgs = [red_tile, green_tile, blue_tile, black_tile, sand_tile]
 
-tree = pyglet.resource.image("tree.png")
-stone = pyglet.resource.image("stone.png")
+tree = pyglet.resource.image("env_tree.png")
+stone = pyglet.resource.image("env_stone.png")
 
 env_imgs = [tree, stone]
 
