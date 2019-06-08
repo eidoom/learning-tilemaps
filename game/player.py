@@ -1,7 +1,6 @@
 import pyglet
 
-import positional_object
-import util
+from game import util, positional_object
 
 
 class Player(positional_object.PositionalObject):
@@ -101,3 +100,7 @@ class Player(positional_object.PositionalObject):
             self.map_y += movement_speed * dt
         if self.key_handler[control["down"]]:
             self.map_y -= movement_speed * dt
+
+
+if __name__ == "__main__":
+    exit()

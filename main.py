@@ -2,12 +2,8 @@ from random import choices, randrange
 
 import pyglet
 
-import camera
-import map_object
+from game import camera, util, player, map_object, resources as r
 import parameters as p
-import player
-import resources as r
-import util
 
 weights = [1, 20, 3, 1, 0]
 traversability = {r.red_tile: False, r.green_tile: True, r.blue_tile: False, r.black_tile: False, r.sand_tile: True}
@@ -103,9 +99,8 @@ def update(dt):
     for object_ in tile_objects + list(env_obj_dict.values()):
         cam.apply(object_)
 
-    if True:
-        fps = pyglet.clock.get_fps()
-        print(fps)
+    # fps = pyglet.clock.get_fps()
+    # print(fps)
 
 
 def main():

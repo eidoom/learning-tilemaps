@@ -30,3 +30,7 @@ class Camera:
             target.y = target.map_y - self.y
         else:
             self.y = target.map_y - self.win_height // 2
+
+
+if __name__ == "__main__":
+    exit()

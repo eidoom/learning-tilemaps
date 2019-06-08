@@ -30,3 +30,5 @@ player_image = pyglet.resource.image("player.png")
 
 centre_image(player_image)
 
+if __name__ == "__main__":
+    exit()

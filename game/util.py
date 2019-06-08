@@ -15,3 +15,7 @@ def pixels_to_tiles(x_, y_):
 
 def nested_ref_to_list_ref(i_, j_):
     return i_ * p.MAP_TILE_WIDTH + j_
+
+
+if __name__ == "__main__":
+    exit()

@@ -1,4 +1,4 @@
-import positional_object
+from game import positional_object
 
 
 class MapObject(positional_object.PositionalObject):
@@ -6,3 +6,7 @@ class MapObject(positional_object.PositionalObject):
         super().__init__(*args, **kwargs)
 
         self.traversable = traversable
+
+
+if __name__ == "__main__":
+    exit()
