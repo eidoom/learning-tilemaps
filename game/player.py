@@ -4,14 +4,32 @@ from game import util, positional_object
 
 
 class Player(positional_object.PositionalObject):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, c_img, l_img, r_img, c_ani, l_ani, r_ani, *args, **kwargs):
+        super().__init__(img=c_img, *args, **kwargs)
 
         self.key_handler = pyglet.window.key.KeyStateHandler()
         self.event_handlers = [self, self.key_handler]
 
+        controls_raw = {
+            "up": "W",
+            "left": "A",
+            "right": "D",
+            "down": "S",
+            "run": "LSHIFT"
+        }
+        self.control = {
+            dict_key: getattr(pyglet.window.key, dict_value) for dict_key, dict_value in controls_raw.items()}
+
+        self.c_img = c_img
+        self.l_img = l_img
+        self.r_img = r_img
+        self.c_ani = c_ani
+        self.l_ani = l_ani
+        self.r_ani = r_ani
+
         self.walking_speed = 100
         self.running_speed = self.walking_speed * 2
+        self.movement_speed = self.walking_speed
 
     def check_map_bounds(self, map_width, map_height):
         min_x = self.half_width
@@ -77,29 +95,36 @@ class Player(positional_object.PositionalObject):
                     elif self.map_y > obj.map_y + obj.half_height:
                         self.map_y = top
 
-    def object_update(self, dt):
-        controls_raw = {
-            "up": "W",
-            "left": "A",
-            "right": "D",
-            "down": "S",
-            "run": "LSHIFT"
-        }
-        control = {dict_key: getattr(pyglet.window.key, dict_value) for dict_key, dict_value in controls_raw.items()}
+    def on_key_press(self, symbol, modifiers):
+        if symbol is self.control["run"]:
+            self.movement_speed = self.running_speed
+        if symbol is self.control["right"]:
+            self.image = self.r_ani
+        if symbol is self.control["left"]:
+            self.image = self.l_ani
+        if symbol in [self.control[key] for key in ("up", "down")]:
+            self.image = self.c_ani
 
-        if self.key_handler[control["run"]]:
-            movement_speed = self.running_speed
-        else:
-            movement_speed = self.walking_speed
+    def on_key_release(self, symbol, modifiers):
+        if symbol is self.control["run"]:
+            self.movement_speed = self.walking_speed
+        if symbol is self.control["right"]:
+            self.image = self.r_img
+        if symbol is self.control["left"]:
+            self.image = self.l_img
+        if symbol in [self.control[key] for key in ("up", "down")]:
+            self.image = self.c_img
 
-        if self.key_handler[control["left"]]:
-            self.map_x -= movement_speed * dt
-        if self.key_handler[control["right"]]:
-            self.map_x += movement_speed * dt
-        if self.key_handler[control["up"]]:
-            self.map_y += movement_speed * dt
-        if self.key_handler[control["down"]]:
-            self.map_y -= movement_speed * dt
+    def update_obj(self, dt):
+
+        if self.key_handler[self.control["left"]]:
+            self.map_x -= self.movement_speed * dt
+        if self.key_handler[self.control["right"]]:
+            self.map_x += self.movement_speed * dt
+        if self.key_handler[self.control["up"]]:
+            self.map_y += self.movement_speed * dt
+        if self.key_handler[self.control["down"]]:
+            self.map_y -= self.movement_speed * dt
 
 
 if __name__ == "__main__":

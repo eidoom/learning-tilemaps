@@ -66,19 +66,22 @@ for i in range(p.MAP_TILE_HEIGHT):
 
 cam = camera.Camera(game_window.width, game_window.height, p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
 
-player = player.Player(img=r.player_image, x=game_window.width // 2, y=game_window.height // 2,
-                       map_x=p.MAP_PIXEL_HALF_WIDTH, map_y=p.MAP_PIXEL_HALF_HEIGHT, batch=main_batch, group=foreground)
+player = player.Player(
+    c_img=r.player_image, l_img=r.player_left_image, r_img=r.player_right_image,
+    c_ani=r.player_animation, l_ani=r.player_left_animation, r_ani=r.player_right_animation,
+    x=game_window.width // 2, y=game_window.height // 2, map_x=p.MAP_PIXEL_HALF_WIDTH, map_y=p.MAP_PIXEL_HALF_HEIGHT,
+    batch=main_batch, group=foreground)
 
-game_objects = [player]
+game_objs = [player]
 
-for game_object in game_objects:
-    for handler in game_object.event_handlers:
+for game_obj in game_objs:
+    for handler in game_obj.event_handlers:
         game_window.push_handlers(handler)
 
 
 # @game_window.event
 # def on_resize(width, height):
-#     camera.apply(player)
+#     cam.apply(player)
 
 
 @game_window.event
@@ -90,8 +93,8 @@ def on_draw():
 def update(dt):
     cam.update(player)
 
-    for game_object_ in game_objects:
-        game_object_.object_update(dt)
+    for game_obj_ in game_objs:
+        game_obj_.update_obj(dt)
 
     player.check_map_bounds(p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
     player.check_traversability(tile_objects, env_obj_dict, max_width, max_height)
