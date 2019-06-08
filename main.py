@@ -38,7 +38,7 @@ main_batch = pyglet.graphics.Batch()
 background = pyglet.graphics.OrderedGroup(0)
 foreground = pyglet.graphics.OrderedGroup(1)
 
-tile_objects = []
+tile_objs = []
 env_obj_dict = {}
 
 max_height = max([img.height for img in r.env_imgs])
@@ -48,7 +48,7 @@ for i in range(p.MAP_TILE_HEIGHT):
     for j in range(p.MAP_TILE_WIDTH):
         x, y = util.tiles_to_pixels(i, j)
         tile = tile_map[i][j]
-        tile_objects.append(map_object.MapObject(
+        tile_objs.append(map_object.MapObject(
             img=tile, traversable=traversability[tile], map_x=x, map_y=y, batch=main_batch, group=background))
         if choices([True, False], weights=[1, 9])[0]:
             obj_x = x + randrange(0, tile.width)
@@ -63,6 +63,11 @@ for i in range(p.MAP_TILE_HEIGHT):
                 env_obj_dict.update({(obj_x, obj_y): obj})
             except NameError:
                 pass
+
+scale = p.TILE_SIZE / r.tile_imgs[0].width
+
+for tile in tile_objs:
+    tile.scale = scale
 
 cam = camera.Camera(game_window.width, game_window.height, p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
 
@@ -110,9 +115,9 @@ def update(dt):
         dy_obj.update_obj(dt)
         dy_obj.check_map_bounds(p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
 
-    protagonist.check_traversability(tile_objects, env_obj_dict, max_width, max_height)
+    protagonist.check_traversability(tile_objs, env_obj_dict, max_width, max_height)
 
-    for object_ in tile_objects + list(env_obj_dict.values()) + ai_characters:
+    for object_ in tile_objs + list(env_obj_dict.values()) + ai_characters:
         cam.apply(object_)
 
     # fps = pyglet.clock.get_fps()
