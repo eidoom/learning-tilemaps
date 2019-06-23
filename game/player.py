@@ -80,8 +80,6 @@ class Player(character.Character):
                         self.map_y = top
 
     def on_key_press(self, symbol, modifiers):
-        # if symbol is self.control["run"]:
-        #     self.movement_speed = self.running_speed
         if symbol is self.control["right"]:
             self.image = self.r_ani
         if symbol is self.control["left"]:
@@ -90,15 +88,22 @@ class Player(character.Character):
             self.image = self.c_ani
 
     def on_key_release(self, symbol, modifiers):
-        # if symbol is self.control["run"]:
-        #     self.movement_speed = self.walking_speed
-        if not any([self.key_handler[self.control[key]] for key in ("left", "right", "up", "down")]):
-            if symbol is self.control["right"]:
-                self.image = self.r_img
-            if symbol is self.control["left"]:
-                self.image = self.l_img
-            if symbol in [self.control[key] for key in ("up", "down")]:
-                self.image = self.c_img
+        def continue_animation(static_image):
+            if self.key_handler[self.control["right"]]:
+                self.image = self.r_ani
+            elif self.key_handler[self.control["left"]]:
+                self.image = self.l_ani
+            elif any([self.key_handler[self.control[key]] for key in ("up", "down")]):
+                self.image = self.c_ani
+            else:
+                self.image = static_image
+
+        if symbol is self.control["right"]:
+            continue_animation(self.r_img)
+        if symbol is self.control["left"]:
+            continue_animation(self.l_img)
+        if symbol in [self.control[key] for key in ("up", "down")]:
+            continue_animation(self.c_img)
 
     def update_obj(self, dt):
         if self.key_handler[self.control["run"]]:
