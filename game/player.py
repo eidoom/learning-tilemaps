@@ -29,6 +29,10 @@ class Player(character.Character):
         self.l_ani = l_ani
         self.r_ani = r_ani
 
+        self.effect = False
+        self.effect_x = 0
+        self.effect_y = 0
+
     def check_traversability(self, tile_objs, env_obj_dict, max_width, max_height):
 
         centre_i, centre_j = util.pixels_to_tiles(self.map_x, self.map_y)
@@ -104,6 +108,12 @@ class Player(character.Character):
             continue_animation(self.l_img)
         if symbol in [self.control[key] for key in ("up", "down")]:
             continue_animation(self.c_img)
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if button is pyglet.window.mouse.LEFT:
+            self.effect = True
+            self.effect_x = x
+            self.effect_y = y
 
     def update_obj(self, dt):
         if self.key_handler[self.control["run"]]:

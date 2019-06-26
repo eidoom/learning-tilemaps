@@ -17,7 +17,8 @@ def generate_walking_animation(*files, walk_animation_speed=0.1):
     imgs = [pyglet.resource.image(file) for file in files]
     for img in imgs:
         centre_image(img)
-    return imgs[0], pyglet.image.Animation.from_image_sequence(imgs + [imgs[0]], walk_animation_speed)
+    return imgs[0], \
+           pyglet.image.Animation.from_image_sequence(sequence=imgs + [imgs[0]], period=walk_animation_speed, loop=True)
 
 
 red_tile = pyglet.resource.image("tile_red.png")
@@ -38,6 +39,13 @@ player_left_image, player_left_animation = generate_walking_animation("player_le
 player_right_image, player_right_animation = generate_walking_animation("player_right.png", "player_right_2.png")
 
 char_npc_air = pyglet.resource.image("char_npc_air.png")
+
+explosion_images_image = pyglet.resource.image('explosion.png')
+explosion_images = pyglet.image.ImageGrid(image=explosion_images_image, rows=2, columns=8)
+# explosion_images = explosion_images.get_texture_sequence()
+for explosion_image in explosion_images:
+    centre_image(explosion_image)
+explosion_animation = pyglet.image.Animation.from_image_sequence(sequence=explosion_images, period=0.07, loop=False)
 
 if __name__ == "__main__":
     exit()

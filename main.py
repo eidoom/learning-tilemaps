@@ -2,7 +2,7 @@ from random import choices, randrange
 
 import pyglet
 
-from game import camera, util, player, map_object, resources as r, npc
+from game import camera, util, player, map_object, resources as r, npc, effect
 import parameters as p
 
 weights = [1, 20, 3, 1, 0]
@@ -96,10 +96,11 @@ for input_obj in input_objs:
 
 dynamic_objs = input_objs + ai_characters
 
-
 # @game_window.event
 # def on_resize(width, height):
 #     cam.apply(protagonist)
+
+animations = []
 
 
 @game_window.event
@@ -111,13 +112,25 @@ def on_draw():
 def update(dt):
     cam.update(protagonist)
 
+    if protagonist.effect:
+        new_ani = effect.Effect(img=r.explosion_animation, x=protagonist.effect_x, y=protagonist.effect_y,
+                                group=foreground, batch=main_batch)
+        cam.initialise(new_ani)
+        animations.append(new_ani)
+        protagonist.effect = False
+
     for dy_obj in dynamic_objs:
         dy_obj.update_obj(dt)
         dy_obj.check_map_bounds(p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
 
+    for ani in animations:
+        if ani.remove:
+            ani.delete()
+            animations.remove(ani)
+
     protagonist.check_traversability(tile_objs, env_obj_dict, max_width, max_height)
 
-    for object_ in tile_objs + list(env_obj_dict.values()) + ai_characters:
+    for object_ in tile_objs + list(env_obj_dict.values()) + ai_characters + animations:
         cam.apply(object_)
 
     # fps = pyglet.clock.get_fps()

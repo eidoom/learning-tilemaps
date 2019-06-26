@@ -8,6 +8,10 @@ class Camera:
         self.map_width = map_width
         self.map_height = map_height
 
+    def initialise(self, target):
+        target.map_x = target.x + self.x
+        target.map_y = target.y + self.y
+
     def apply(self, target):
         target.x = target.map_x - self.x
         target.y = target.map_y - self.y
