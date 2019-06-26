@@ -88,13 +88,9 @@ protagonist = player.Player(
     x=game_window.width // 2, y=game_window.height // 2, map_x=p.MAP_PIXEL_HALF_WIDTH, map_y=p.MAP_PIXEL_HALF_HEIGHT,
     batch=main_batch, group=foreground)
 
-input_objs = [protagonist]
 
-for input_obj in input_objs:
-    for handler in input_obj.event_handlers:
-        game_window.push_handlers(handler)
-
-dynamic_objs = input_objs + ai_characters
+for handler in protagonist.event_handlers:
+    game_window.push_handlers(handler)
 
 # @game_window.event
 # def on_resize(width, height):
@@ -119,9 +115,16 @@ def update(dt):
         animations.append(new_ani)
         protagonist.effect = False
 
-    for dy_obj in dynamic_objs:
+    for dy_obj in [protagonist] + ai_characters:
         dy_obj.update_obj(dt)
         dy_obj.check_map_bounds(p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
+
+    for dude in ai_characters:
+        for ani in animations:
+            dude.check_attack(ani)
+        if dude.hit:
+            dude.delete()
+            ai_characters.remove(dude)
 
     for ani in animations:
         if ani.remove:

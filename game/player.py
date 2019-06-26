@@ -113,7 +113,7 @@ class Player(character.Character):
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button is pyglet.window.mouse.LEFT:
-            if util.distance((x, y), (self.x, self.y)) < self.interaction_range:
+            if util.distance((x, y), self.position) < self.interaction_range:
                 self.effect = True
                 self.effect_x = x
                 self.effect_y = y

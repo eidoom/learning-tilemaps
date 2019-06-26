@@ -10,6 +10,7 @@ class PositionalObject(pyglet.sprite.Sprite):
 
         self.half_width = self.width // 2
         self.half_height = self.height // 2
+        self.radius = (self.half_height + self.half_width) / 2
 
 
 if __name__ == "__main__":
