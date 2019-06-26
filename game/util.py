@@ -1,3 +1,5 @@
+from math import sqrt
+
 import parameters as p
 
 
@@ -15,6 +17,10 @@ def pixels_to_tiles(x_, y_):
 
 def nested_ref_to_list_ref(i_, j_):
     return i_ * p.MAP_TILE_WIDTH + j_
+
+
+def distance(point_1=(0, 0), point_2=(0, 0)):
+    return sqrt(sum((point_1[i] - point_2[i]) ** 2 for i in range(len(point_1))))
 
 
 if __name__ == "__main__":
