@@ -37,6 +37,10 @@ main_batch = pyglet.graphics.Batch()
 
 background = pyglet.graphics.OrderedGroup(0)
 foreground = pyglet.graphics.OrderedGroup(1)
+interface = pyglet.graphics.OrderedGroup(2)
+
+label = pyglet.text.Label(text="Test", x=p.WINDOW_HALF_WIDTH, y=p.WINDOW_HALF_HEIGHT, anchor_x='center',
+                          anchor_y='center', font_size=20, batch=main_batch, group=interface)
 
 tile_objs = []
 env_obj_dict = {}
@@ -87,7 +91,6 @@ protagonist = player.Player(
     c_ani=r.player_animation, l_ani=r.player_left_animation, r_ani=r.player_right_animation,
     x=game_window.width // 2, y=game_window.height // 2, map_x=p.MAP_PIXEL_HALF_WIDTH, map_y=p.MAP_PIXEL_HALF_HEIGHT,
     batch=main_batch, group=foreground)
-
 
 for handler in protagonist.event_handlers:
     game_window.push_handlers(handler)
