@@ -1,8 +1,10 @@
+#!/usr/bin/env python3
+
 from random import choices, randrange
 
 import pyglet
 
-from game import camera, util, player, map_object, resources as r, npc, effect
+from game import camera, util, player, map_object, resources as r, npc, effect, hud
 import parameters as p
 
 weights = [1, 20, 3, 1, 0]
@@ -37,10 +39,16 @@ main_batch = pyglet.graphics.Batch()
 
 background = pyglet.graphics.OrderedGroup(0)
 foreground = pyglet.graphics.OrderedGroup(1)
-interface = pyglet.graphics.OrderedGroup(2)
+interface_layers = [pyglet.graphics.OrderedGroup(x) for x in (2, 3)]
 
-label = pyglet.text.Label(text="Test", x=p.WINDOW_HALF_WIDTH, y=p.WINDOW_HALF_HEIGHT, anchor_x='center',
-                          anchor_y='center', font_size=20, batch=main_batch, group=interface)
+# label = pyglet.text.Label(text="Test", x=p.WINDOW_HALF_WIDTH, y=p.WINDOW_HALF_HEIGHT, anchor_x='center',
+#                           anchor_y='center', font_size=20, batch=main_batch, group=interface)
+
+game_hud = hud.HUD(hud_batch=main_batch, hud_group=interface_layers[0], inv_slot_img=r.inventory_slot,
+                   inv_select_img=r.inventory_select, inv_current_img=r.inventory_selected, middle=p.WINDOW_HALF_WIDTH)
+
+fire_symbol = pyglet.sprite.Sprite(img=r.explosion_symbol, x=p.WINDOW_HALF_WIDTH, y=20, batch=main_batch,
+                                   group=interface_layers[1])
 
 tile_objs = []
 env_obj_dict = {}
@@ -92,7 +100,7 @@ protagonist = player.Player(
     x=game_window.width // 2, y=game_window.height // 2, map_x=p.MAP_PIXEL_HALF_WIDTH, map_y=p.MAP_PIXEL_HALF_HEIGHT,
     batch=main_batch, group=foreground)
 
-for handler in protagonist.event_handlers:
+for handler in [item for row in [getattr(obj, "event_handlers") for obj in (protagonist, game_hud)] for item in row]:
     game_window.push_handlers(handler)
 
 # @game_window.event
@@ -138,6 +146,8 @@ def update(dt):
 
     for object_ in tile_objs + list(env_obj_dict.values()) + ai_characters + animations:
         cam.apply(object_)
+
+    # game_hud.update_obj()
 
     # fps = pyglet.clock.get_fps()
     # print(fps)

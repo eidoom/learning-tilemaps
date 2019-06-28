@@ -4,13 +4,15 @@ pyglet.resource.path = ['resources']
 pyglet.resource.reindex()
 
 
-def centre_image_horizontally(image):
-    image.anchor_x = image.width // 2
-
-
 def centre_image(image):
-    centre_image_horizontally(image)
+    image.anchor_x = image.width // 2
     image.anchor_y = image.height // 2
+
+
+def import_and_centre(file_name):
+    image = pyglet.resource.image(file_name)
+    centre_image(image)
+    return image
 
 
 def generate_walking_animation(*files, walk_animation_speed=0.1):
@@ -43,9 +45,15 @@ char_npc_air = pyglet.resource.image("char_npc_air.png")
 explosion_images_image = pyglet.resource.image('explosion.png')
 explosion_images = pyglet.image.ImageGrid(image=explosion_images_image, rows=2, columns=8)
 # explosion_images = explosion_images.get_texture_sequence()
-for explosion_image in explosion_images:
-    centre_image(explosion_image)
+for img in explosion_images:
+    centre_image(img)
+# explosion_img = explosion_images[4]
 explosion_animation = pyglet.image.Animation.from_image_sequence(sequence=explosion_images, period=0.07, loop=False)
+explosion_symbol = pyglet.image.Animation.from_image_sequence(sequence=explosion_images, period=0.07, loop=True)
+
+inventory_slot = import_and_centre("inventory_slot.png")
+inventory_select = import_and_centre("inventory_slot_select.png")
+inventory_selected = import_and_centre("inventory_slot_selected.png")
 
 if __name__ == "__main__":
     exit()
