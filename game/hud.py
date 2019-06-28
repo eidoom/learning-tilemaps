@@ -10,13 +10,15 @@ class HUD:
         self.inv_current_img = inv_current_img
         self.middle = middle
 
-        self.offset = 20
         self.slot_width = self.inv_slot_img.width
+        self.offset = self.slot_width // 2
 
-        self.key_handler = pyglet.window.key.KeyStateHandler()
-        self.event_handlers = [self, self.key_handler]
+        # self.key_handler = pyglet.window.key.KeyStateHandler()
+        # self.event_handlers = [self, self.key_handler]
 
-        # Currently logic requires odd number of slots
+        self.event_handlers = [self]
+
+        # Currently make_slot() logic requires odd number of slots
         self.number_slots = 3
         self.bar_width = self.number_slots // 2
         self.slots = [self.make_slot(index, self.inv_slot_img) for index in range(self.number_slots)]
@@ -24,8 +26,8 @@ class HUD:
         self.current = 1
         self.assign_slot(self.current, self.inv_current_img)
 
-        self.num_keys = [getattr(pyglet.window.key, f"_{x}") for x in range(1, self.number_slots + 1)]
-        self.slot_dic = {num_key: num for num, num_key in enumerate(self.num_keys)}
+        num_keys = [getattr(pyglet.window.key, f"_{x}") for x in range(1, self.number_slots + 1)]
+        self.slot_dic = {num_key: num for num, num_key in enumerate(num_keys)}
 
     def make_slot(self, number, img):
         return pyglet.sprite.Sprite(
