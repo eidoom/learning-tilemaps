@@ -19,6 +19,7 @@ class HUD:
         self.slots = [self.make_slot(index, self.inv_slot_img) for index in range(3)]
 
         self.current = 1
+        self.assign_slot(self.current, self.inv_current_img)
 
     def make_slot(self, number, img):
         return pyglet.sprite.Sprite(

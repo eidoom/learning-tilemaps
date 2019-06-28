@@ -120,10 +120,13 @@ def update(dt):
     cam.update(protagonist)
 
     if protagonist.effect:
-        new_ani = effect.Effect(img=r.explosion_animation, x=protagonist.effect_x, y=protagonist.effect_y,
-                                group=foreground, batch=main_batch)
-        cam.initialise(new_ani)
-        animations.append(new_ani)
+        try:
+            new_ani = effect.Effect(img=r.interactions[game_hud.current], x=protagonist.effect_x, y=protagonist.effect_y,
+                                    group=foreground, batch=main_batch)
+            cam.initialise(new_ani)
+            animations.append(new_ani)
+        except AttributeError:
+            pass
         protagonist.effect = False
 
     for dy_obj in [protagonist] + ai_characters:

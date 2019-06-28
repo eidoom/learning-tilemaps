@@ -51,6 +51,8 @@ for img in explosion_images:
 explosion_animation = pyglet.image.Animation.from_image_sequence(sequence=explosion_images, period=0.07, loop=False)
 explosion_symbol = pyglet.image.Animation.from_image_sequence(sequence=explosion_images, period=0.07, loop=True)
 
+interactions = [None, explosion_animation, None]
+
 inventory_slot = import_and_centre("inventory_slot.png")
 inventory_select = import_and_centre("inventory_slot_select.png")
 inventory_selected = import_and_centre("inventory_slot_selected.png")
