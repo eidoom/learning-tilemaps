@@ -24,8 +24,8 @@ background = pyglet.graphics.OrderedGroup(0)
 foreground = pyglet.graphics.OrderedGroup(1)
 interface_layers = [pyglet.graphics.OrderedGroup(x) for x in (2, 3)]
 
-# label = pyglet.text.Label(text="Test", x=p.WINDOW_HALF_WIDTH, y=p.WINDOW_HALF_HEIGHT, anchor_x='center',
-#                           anchor_y='center', font_size=20, batch=main_batch, group=interface)
+fps_label = pyglet.text.Label(text=f"FPS : {0}", x=p.WINDOW_WIDTH - 30, y=p.WINDOW_HEIGHT - 10, anchor_x='center',
+                              anchor_y='center', font_size=10, batch=main_batch, group=interface_layers[1])
 
 game_hud = hud.HUD(hud_batch=main_batch, hud_groups=interface_layers, inv_slot_img=r.inventory_slot,
                    inv_select_img=r.inventory_select, inv_current_img=r.inventory_selected, middle=p.WINDOW_HALF_WIDTH,
@@ -165,8 +165,8 @@ def update(dt):
 
     # game_hud.update_obj()
 
-    # fps = pyglet.clock.get_fps()
-    # print(fps)
+    fps = pyglet.clock.get_fps()
+    fps_label.text = f"FPS: {int(fps)}"
 
 
 def main():
