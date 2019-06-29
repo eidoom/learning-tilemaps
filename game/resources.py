@@ -21,6 +21,16 @@ def generate_walking_animation(*files, walk_animation_speed=0.1):
            pyglet.image.Animation.from_image_sequence(sequence=imgs + [imgs[0]], period=walk_animation_speed, loop=True)
 
 
+def generate_attack(file):
+    grid = pyglet.resource.image(file)
+    images = pyglet.image.ImageGrid(image=grid, rows=2, columns=8)
+    for image in images:
+        centre_image(image)
+    animation = pyglet.image.Animation.from_image_sequence(sequence=images, period=0.07, loop=False)
+    symbol = pyglet.image.Animation.from_image_sequence(sequence=images, period=0.07, loop=True)
+    return symbol, animation
+
+
 red_tile = pyglet.resource.image("tile_red.png")
 green_tile = pyglet.resource.image("tile_green.png")
 blue_tile = pyglet.resource.image("tile_blue.png")
@@ -42,15 +52,12 @@ char_npc_air = import_and_centre("char_npc_air.png")
 
 ai_char_imgs = [char_npc_air]
 
-explosion_images_image = pyglet.resource.image('fire_attack.png')
-explosion_images = pyglet.image.ImageGrid(image=explosion_images_image, rows=2, columns=8)
-for img in explosion_images:
-    centre_image(img)
-# explosion_img = explosion_images[4]
-explosion_animation = pyglet.image.Animation.from_image_sequence(sequence=explosion_images, period=0.07, loop=False)
-explosion_symbol = pyglet.image.Animation.from_image_sequence(sequence=explosion_images, period=0.07, loop=True)
+fire_symbol, fire_animation = generate_attack('fire_attack.png')
+electricity_symbol, electricity_animation = generate_attack('electricity_attack.png')
+ice_symbol, ice_animation = generate_attack('ice_attack.png')
 
-interactions = [None, explosion_animation, None]
+attack_animations = [fire_animation, electricity_animation, ice_animation]
+attack_symbols = [fire_symbol, electricity_symbol, ice_symbol]
 
 inventory_slot = import_and_centre("inventory_slot.png")
 inventory_select = import_and_centre("inventory_slot_select.png")

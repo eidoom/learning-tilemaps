@@ -29,7 +29,7 @@ interface_layers = [pyglet.graphics.OrderedGroup(x) for x in (2, 3)]
 
 game_hud = hud.HUD(hud_batch=main_batch, hud_groups=interface_layers, inv_slot_img=r.inventory_slot,
                    inv_select_img=r.inventory_select, inv_current_img=r.inventory_selected, middle=p.WINDOW_HALF_WIDTH,
-                   item_imgs=[None, r.explosion_symbol, None])
+                   item_imgs=r.attack_symbols)
 
 tile_objs = []
 env_obj_dict = {}
@@ -113,7 +113,7 @@ def update(dt):
 
     if protagonist.effect:
         try:
-            new_ani = effect.Effect(img=r.interactions[game_hud.current], x=protagonist.effect_x,
+            new_ani = effect.Effect(img=r.attack_animations[game_hud.current], x=protagonist.effect_x,
                                     y=protagonist.effect_y, group=foreground, batch=main_batch)
             cam.initialise(new_ani)
             animations.append(new_ani)
