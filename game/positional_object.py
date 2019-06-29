@@ -12,6 +12,8 @@ class PositionalObject(pyglet.sprite.Sprite):
         self.half_height = self.height // 2
         self.radius = (self.half_height + self.half_width) / 2
 
+        self.remove = False
+
 
 if __name__ == "__main__":
     exit()

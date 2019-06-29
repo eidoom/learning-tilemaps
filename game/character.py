@@ -6,7 +6,6 @@ class Character(positional_object.PositionalObject):
         super().__init__(*args, **kwargs)
 
         self.movement_speed = mvmt_spd
-        self.hit = False
 
     def check_map_bounds(self, map_width, map_height):
         min_x = self.half_width
@@ -37,7 +36,7 @@ class Character(positional_object.PositionalObject):
         collision_distance = self.radius + attack.radius
         actual_distance = util.distance(self.position, attack.position)
         if actual_distance < collision_distance:
-            self.hit = True
+            self.remove = True
 
 
 if __name__ == "__main__":

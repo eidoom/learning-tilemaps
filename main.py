@@ -136,7 +136,7 @@ def update(dt):
     for dude in ai_characters:
         for ani in animations:
             dude.check_attack(ani)
-        if dude.hit:
+        if dude.remove:
             dude.delete()
             ai_characters.remove(dude)
 
