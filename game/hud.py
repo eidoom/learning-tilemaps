@@ -24,11 +24,12 @@ class HUD:
         self.bar_width = self.number_slots // 2
         self.slots = [self.make_piece(index, self.inv_slot_img, layer=0) for index in range(self.number_slots)]
 
-        self.current = 1
-        self.assign_slot(self.current, self.inv_current_img)
+        self.current = None
+        # self.assign_slot(self.current, self.inv_current_img)
 
         self.num_keys = [getattr(pyglet.window.key, f"_{x}") for x in range(1, self.number_slots + 1)]
         self.slot_dic = {num_key: num for num, num_key in enumerate(self.num_keys)}
+        self.sheath = pyglet.window.key.Q
 
         self.items = [self.make_piece(i, item_img, layer=1) for i, item_img in enumerate(self.item_imgs) if item_img]
 
@@ -44,14 +45,21 @@ class HUD:
         self.items[number] = self.make_piece(number, item_img, layer=1)
 
     def on_key_press(self, symbol, modifiers):
-        try:
-            self.assign_slot(self.slot_dic[symbol], self.inv_select_img)
-        except KeyError:
-            pass
+        if symbol is self.sheath:
+            self.assign_slot(self.current, self.inv_slot_img)
+            self.current = None
+        else:
+            try:
+                self.assign_slot(self.slot_dic[symbol], self.inv_select_img)
+            except KeyError:
+                pass
 
     def on_key_release(self, symbol, modifiers):
         if symbol in self.num_keys:
-            self.assign_slot(self.current, self.inv_slot_img)
+            try:
+                self.assign_slot(self.current, self.inv_slot_img)
+            except TypeError:
+                pass
             self.current = self.slot_dic[symbol]
             self.assign_slot(self.current, self.inv_current_img)
 

@@ -111,6 +111,8 @@ def on_draw():
 def update(dt):
     cam.update(protagonist)
 
+    protagonist.current = game_hud.current
+
     if protagonist.effect:
         try:
             new_ani = effect.Effect(img=r.attack_animations[game_hud.current], x=protagonist.effect_x,
