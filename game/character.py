@@ -2,10 +2,15 @@ from game import positional_object, util
 
 
 class Character(positional_object.PositionalObject):
-    def __init__(self, mvmt_spd, *args, **kwargs):
+    def __init__(self, mvmt_spd, affinity, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.movement_speed = mvmt_spd
+        self.affinity = affinity
+
+        tmp1 = {"ice": "fire"}
+        tmp2 = {value: key for key, value in tmp1.items()}
+        self.affinity_wheel = {**tmp1, **tmp2, "electricity": "electricity"}
 
     def check_map_bounds(self, map_width, map_height):
         min_x = self.half_width
@@ -33,10 +38,12 @@ class Character(positional_object.PositionalObject):
         #     if point in generate_hit_box(attack):
         #         self.hit = True
         #         return
-        collision_distance = self.radius + attack.radius
-        actual_distance = util.distance(self.position, attack.position)
-        if actual_distance < collision_distance:
-            self.remove = True
+
+        if attack.affinity is self.affinity_wheel[self.affinity]:
+            collision_distance = self.radius + attack.radius
+            actual_distance = util.distance(self.position, attack.position)
+            if actual_distance < collision_distance:
+                self.remove = True
 
 
 if __name__ == "__main__":

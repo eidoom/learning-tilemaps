@@ -5,7 +5,7 @@ from random import choices, randrange
 import pyglet
 
 import parameters as p
-from game import camera, util, player, map_object, resources as r, npc, effect, hud, map
+from game import camera, util, player, map_object, resources as r, char_air, effect, hud, map, char_fire, char_green
 
 weights = [1, 20, 3, 1, 0]
 traversability = {r.red_tile: False, r.green_tile: True, r.blue_tile: False, r.black_tile: False, r.sand_tile: True}
@@ -75,10 +75,13 @@ def generate_position():
 
 ai_characters = []
 
-for _ in range(10 * p.MAP_TILE_SCALE):
+for _ in range(3 * p.MAP_TILE_SCALE):
     pos = generate_position()
-    ai_characters.append(
-        npc.NPC(img=choices(r.ai_char_imgs)[0], map_x=pos[0], map_y=pos[1], group=foreground, batch=main_batch))
+    ai_characters.append(char_air.CharAir(map_x=pos[0], map_y=pos[1], group=foreground, batch=main_batch))
+    pos = generate_position()
+    ai_characters.append(char_fire.CharFire(map_x=pos[0], map_y=pos[1], group=foreground, batch=main_batch))
+    pos = generate_position()
+    ai_characters.append(char_green.CharGreen(map_x=pos[0], map_y=pos[1], group=foreground, batch=main_batch))
 
 
 def make_ai_chars_dict(ai_chars_list):
@@ -109,13 +112,17 @@ def on_draw():
     main_batch.draw()
 
 
+attack_affinities = ["fire", "electricity", "ice"]
+
+
 def update(dt):
     cam.update(protagonist)
 
     if protagonist.effect:
         try:
-            new_ani = effect.Effect(img=r.attack_animations[protagonist.current], x=protagonist.effect_x,
-                                    y=protagonist.effect_y, group=foreground, batch=main_batch)
+            new_ani = effect.Effect(
+                img=r.attack_animations[protagonist.current], affinity=attack_affinities[protagonist.current],
+                x=protagonist.effect_x, y=protagonist.effect_y, group=foreground, batch=main_batch)
             cam.initialise(new_ani)
             animations.append(new_ani)
         except AttributeError or TypeError:

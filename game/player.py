@@ -7,7 +7,7 @@ class Player(character.Character):
     def __init__(self, c_img, l_img, r_img, c_ani, l_ani, r_ani, *args, **kwargs):
         self.walking_speed = 100
         self.running_speed = self.walking_speed * 2
-        super().__init__(img=c_img, mvmt_spd=self.walking_speed, *args, **kwargs)
+        super().__init__(img=c_img, mvmt_spd=self.walking_speed, affinity=None, *args, **kwargs)
 
         self.key_handler = pyglet.window.key.KeyStateHandler()
         self.event_handlers = [self, self.key_handler]

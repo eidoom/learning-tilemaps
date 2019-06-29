@@ -5,7 +5,7 @@ from game import character
 
 class NPC(character.Character):
     def __init__(self, *args, **kwargs):
-        super().__init__(mvmt_spd=50, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.max_counter = 3000
         self.counter = randrange(self.max_counter)
