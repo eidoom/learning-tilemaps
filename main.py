@@ -75,9 +75,10 @@ def generate_position():
 
 ai_characters = []
 
-for _ in range(5 * p.MAP_TILE_SCALE):
+for _ in range(10 * p.MAP_TILE_SCALE):
     pos = generate_position()
-    ai_characters.append(npc.NPC(img=r.char_npc_air, map_x=pos[0], map_y=pos[1], group=foreground, batch=main_batch))
+    ai_characters.append(
+        npc.NPC(img=choices(r.ai_char_imgs)[0], map_x=pos[0], map_y=pos[1], group=foreground, batch=main_batch))
 
 
 def make_ai_chars_dict(ai_chars_list):

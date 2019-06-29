@@ -61,7 +61,7 @@ char_npc_air = import_and_centre("char_npc_air.png")
 char_enemy_melee_green = import_and_centre("char_enemy_melee_green.png")
 char_enemy_ranged_fire = import_and_centre("char_enemy_ranged_fire.png")
 
-ai_char_imgs = [char_npc_air]
+ai_char_imgs = [char_npc_air, char_enemy_melee_green, char_enemy_ranged_fire]
 
 fire_symbol, fire_animation = generate_attack('fire_attack.png')
 electricity_symbol, electricity_animation = generate_attack('electricity_attack.png')
