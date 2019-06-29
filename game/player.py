@@ -37,6 +37,37 @@ class Player(character.Character):
 
         self.current = None
 
+    def find_near_objs_centre_anchor(self, obj_dict, obj_max_width, obj_max_height):
+        width = (self.half_width + obj_max_width // 2) // self.col_res
+        height = (self.half_height + obj_max_height // 2) // self.col_res
+
+        objs = []
+
+        for x in [int(self.col_x()) + xx for xx in range(-width, width + 1)]:
+            for y in [int(self.col_y()) + yy for yy in range(-height, height + 1)]:
+                try:
+                    objs.append(obj_dict[(x, y)])
+                except KeyError:
+                    pass
+
+        return objs
+
+    def find_near_objs_bottom_left_anchor(self, obj_dict, obj_max_width, obj_max_height):
+        objs = []
+
+        for x in [int(self.col_x()) + xx for xx in
+                  range(-int(self.half_width + obj_max_width) // self.col_res,
+                        self.half_width // self.col_res + 1)]:
+            for y in [int(self.col_y()) + yy for yy in
+                      range(-int(self.half_height + obj_max_height) // self.col_res,
+                            self.half_height // self.col_res + 1)]:
+                try:
+                    objs.append(obj_dict[(x, y)])
+                except KeyError:
+                    pass
+
+        return objs
+
     def check_traversability(self, tile_objs, env_obj_dict, max_width, max_height):
 
         centre_i, centre_j = util.pixels_to_tiles(self.map_x, self.map_y)
@@ -56,17 +87,7 @@ class Player(character.Character):
         for j in [centre_j + jj for jj in (-1, 1)]:
             add_tile(centre_i, j)
 
-        env_objs = []
-
-        for x in [int(self.col_x()) + xx for xx in
-                  range(-int(self.half_width + max_width + 1) // self.col_res, self.half_width // self.col_res + 1)]:
-            for y in [int(self.col_y()) + yy for yy in
-                      range(-int(self.half_height + max_height + 1) // self.col_res,
-                            self.half_height // self.col_res + 1)]:
-                try:
-                    env_objs.append(env_obj_dict[(x, y)])
-                except KeyError:
-                    pass
+        env_objs = self.find_near_objs_bottom_left_anchor(env_obj_dict, max_width, max_height)
 
         for obj in tiles + env_objs:
             if not obj.traversable:

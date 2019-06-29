@@ -50,6 +50,7 @@ tile_imgs = [red_tile, green_tile, blue_tile, black_tile, sand_tile]
 tree = pyglet.resource.image("env_tree.png")
 tree_frozen = pyglet.resource.image("env_tree_frozen.png")
 stone = pyglet.resource.image("env_stone.png")
+stone_frozen = pyglet.resource.image("env_stone_frozen.png")
 
 env_imgs = [tree, stone]
 

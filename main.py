@@ -142,23 +142,6 @@ def update(dt):
             ani.delete()
             animations.remove(ani)
 
-        # width = int(ani.half_width + max_width_ai_chars // 2)
-        # height = int(ani.half_height + max_height_ai_chars // 2)
-        #
-        # print([key for key in ai_chars_dict.keys()])
-        # print([int(ani.map_x) + xx for xx in range(-width, width + 1)])
-        # exit()
-        #
-        # for x in [int(ani.map_x) + xx for xx in range(-width, width + 1)]:
-        #     for y in [int(ani.map_y) + yy for yy in range(-height, height + 1)]:
-        #         try:
-        #             # print(ai_chars_dict)
-        #             target = ai_chars_dict[(x, y)]
-        #             print(target)
-        #             target.check_attack(ani)
-        #         except KeyError:
-        #             pass
-
     for dude in ai_characters:
         for ani in animations:
             dude.check_attack(ani)
