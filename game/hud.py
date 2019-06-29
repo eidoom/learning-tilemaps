@@ -26,8 +26,8 @@ class HUD:
         self.current = 1
         self.assign_slot(self.current, self.inv_current_img)
 
-        num_keys = [getattr(pyglet.window.key, f"_{x}") for x in range(1, self.number_slots + 1)]
-        self.slot_dic = {num_key: num for num, num_key in enumerate(num_keys)}
+        self.num_keys = [getattr(pyglet.window.key, f"_{x}") for x in range(1, self.number_slots + 1)]
+        self.slot_dic = {num_key: num for num, num_key in enumerate(self.num_keys)}
 
     def make_slot(self, number, img):
         return pyglet.sprite.Sprite(
@@ -44,11 +44,9 @@ class HUD:
             pass
 
     def on_key_release(self, symbol, modifiers):
-        try:
+        if symbol in self.num_keys:
             self.assign_slot(self.current, self.inv_slot_img)
             self.current = self.slot_dic[symbol]
             self.assign_slot(self.current, self.inv_current_img)
-        except KeyError:
-            pass
 
     # def update_obj(self):

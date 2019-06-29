@@ -121,8 +121,8 @@ def update(dt):
 
     if protagonist.effect:
         try:
-            new_ani = effect.Effect(img=r.interactions[game_hud.current], x=protagonist.effect_x, y=protagonist.effect_y,
-                                    group=foreground, batch=main_batch)
+            new_ani = effect.Effect(img=r.interactions[game_hud.current], x=protagonist.effect_x,
+                                    y=protagonist.effect_y, group=foreground, batch=main_batch)
             cam.initialise(new_ani)
             animations.append(new_ani)
         except AttributeError:
