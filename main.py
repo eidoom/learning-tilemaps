@@ -116,7 +116,8 @@ attack_affinities = ["fire", "electricity", "ice"]
 
 
 def update(dt):
-    cam.update(protagonist)
+    if not protagonist.remove:
+        cam.update(protagonist)
 
     if protagonist.effect:
         try:
@@ -139,7 +140,6 @@ def update(dt):
 
     for ani in animations:
         if ani.remove:
-            ani.delete()
             animations.remove(ani)
 
     for dude in ai_characters:
@@ -148,6 +148,10 @@ def update(dt):
         if dude.remove:
             dude.delete()
             ai_characters.remove(dude)
+        if protagonist.check_collision(dude) and not protagonist.remove:
+            effect.Effect(img=r.smoke, x=protagonist.x, y=protagonist.y, group=foreground, batch=main_batch)
+            protagonist.remove = True
+            protagonist.visible = False
 
     for env_obj in env_obj_dict.values():
         for ani in animations:
@@ -157,8 +161,6 @@ def update(dt):
 
     for object_ in tile_objs + list(env_obj_dict.values()) + ai_characters + animations:
         cam.apply(object_)
-
-    # game_hud.update_obj()
 
     fps = pyglet.clock.get_fps()
     fps_label.text = f"FPS: {int(fps)}"
