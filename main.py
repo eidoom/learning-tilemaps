@@ -149,6 +149,10 @@ def update(dt):
             dude.delete()
             ai_characters.remove(dude)
 
+    for env_obj in env_obj_dict.values():
+        for ani in animations:
+            env_obj.check_interaction(ani)
+
     protagonist.check_traversability(tile_objs, env_obj_dict, max_width_env_imgs, max_height_env_imgs)
 
     for object_ in tile_objs + list(env_obj_dict.values()) + ai_characters + animations:
