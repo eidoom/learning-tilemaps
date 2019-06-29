@@ -39,7 +39,10 @@ class HUD:
             y=self.offset, batch=self.hud_batch, group=self.hud_groups[layer])
 
     def assign_slot(self, number, slot_img):
-        self.slots[number] = self.make_piece(number, slot_img, layer=0)
+        try:
+            self.slots[number] = self.make_piece(number, slot_img, layer=0)
+        except TypeError:
+            pass
 
     def assign_item(self, number, item_img):
         self.items[number] = self.make_piece(number, item_img, layer=1)
@@ -56,10 +59,7 @@ class HUD:
 
     def on_key_release(self, symbol, modifiers):
         if symbol in self.num_keys:
-            try:
-                self.assign_slot(self.current, self.inv_slot_img)
-            except TypeError:
-                pass
+            self.assign_slot(self.current, self.inv_slot_img)
             self.current = self.slot_dic[symbol]
             self.assign_slot(self.current, self.inv_current_img)
 

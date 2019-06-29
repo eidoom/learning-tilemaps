@@ -111,17 +111,17 @@ def on_draw():
 def update(dt):
     cam.update(protagonist)
 
-    protagonist.current = game_hud.current
-
     if protagonist.effect:
         try:
-            new_ani = effect.Effect(img=r.attack_animations[game_hud.current], x=protagonist.effect_x,
+            new_ani = effect.Effect(img=r.attack_animations[protagonist.current], x=protagonist.effect_x,
                                     y=protagonist.effect_y, group=foreground, batch=main_batch)
             cam.initialise(new_ani)
             animations.append(new_ani)
-        except AttributeError:
+        except AttributeError or TypeError:
             pass
         protagonist.effect = False
+
+    protagonist.current = game_hud.current
 
     for dy_obj in [protagonist] + ai_characters:
         dy_obj.update_obj(dt)
