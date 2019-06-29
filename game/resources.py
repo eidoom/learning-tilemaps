@@ -42,7 +42,7 @@ char_npc_air = import_and_centre("char_npc_air.png")
 
 ai_char_imgs = [char_npc_air]
 
-explosion_images_image = pyglet.resource.image('explosion.png')
+explosion_images_image = pyglet.resource.image('fire_attack.png')
 explosion_images = pyglet.image.ImageGrid(image=explosion_images_image, rows=2, columns=8)
 for img in explosion_images:
     centre_image(img)

@@ -4,31 +4,14 @@ from random import choices, randrange
 
 import pyglet
 
-from game import camera, util, player, map_object, resources as r, npc, effect, hud
 import parameters as p
+from game import camera, util, player, map_object, resources as r, npc, effect, hud, map
 
 weights = [1, 20, 3, 1, 0]
 traversability = {r.red_tile: False, r.green_tile: True, r.blue_tile: False, r.black_tile: False, r.sand_tile: True}
 
-tile_map = [[choices(r.tile_imgs, weights=weights)[0] for _ in range(p.MAP_TILE_WIDTH)] for _ in
-            range(p.MAP_TILE_HEIGHT)]
-tile_map[p.MAP_TILE_HALF_HEIGHT][p.MAP_TILE_HALF_WIDTH] = r.green_tile
-tile_map[p.MAP_TILE_HALF_HEIGHT][p.MAP_TILE_HALF_WIDTH + 1] = r.green_tile
-tile_map[p.MAP_TILE_HALF_HEIGHT - 1][p.MAP_TILE_HALF_WIDTH] = r.green_tile
-tile_map[p.MAP_TILE_HALF_HEIGHT - 1][p.MAP_TILE_HALF_WIDTH + 1] = r.green_tile
-
-for i in range(p.MAP_TILE_HEIGHT):
-    for j in range(p.MAP_TILE_WIDTH):
-        if tile_map[i][j] == r.blue_tile:
-            try:
-                for ii in (i - 1, i + 1):
-                    if not tile_map[ii][j] == r.blue_tile:
-                        tile_map[ii][j] = r.sand_tile
-                for jj in (j - 1, j + 1):
-                    if not tile_map[i][jj] == r.blue_tile:
-                        tile_map[i][jj] = r.sand_tile
-            except IndexError:
-                pass
+map_obj = map.Map(tile_imgs=r.tile_imgs, weights=weights, map_tile_width=p.MAP_TILE_WIDTH,
+                  map_tile_height=p.MAP_TILE_HEIGHT)
 
 game_window = pyglet.window.Window(width=p.WINDOW_WIDTH, height=p.WINDOW_HEIGHT, resizable=True, caption=p.GAME_NAME)
 game_window.set_maximum_size(p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
@@ -44,11 +27,9 @@ interface_layers = [pyglet.graphics.OrderedGroup(x) for x in (2, 3)]
 # label = pyglet.text.Label(text="Test", x=p.WINDOW_HALF_WIDTH, y=p.WINDOW_HALF_HEIGHT, anchor_x='center',
 #                           anchor_y='center', font_size=20, batch=main_batch, group=interface)
 
-game_hud = hud.HUD(hud_batch=main_batch, hud_group=interface_layers[0], inv_slot_img=r.inventory_slot,
-                   inv_select_img=r.inventory_select, inv_current_img=r.inventory_selected, middle=p.WINDOW_HALF_WIDTH)
-
-fire_symbol = pyglet.sprite.Sprite(img=r.explosion_symbol, x=p.WINDOW_HALF_WIDTH, y=20, batch=main_batch,
-                                   group=interface_layers[1])
+game_hud = hud.HUD(hud_batch=main_batch, hud_groups=interface_layers, inv_slot_img=r.inventory_slot,
+                   inv_select_img=r.inventory_select, inv_current_img=r.inventory_selected, middle=p.WINDOW_HALF_WIDTH,
+                   item_imgs=[None, r.explosion_symbol, None])
 
 tile_objs = []
 env_obj_dict = {}
@@ -63,7 +44,7 @@ max_width_env_imgs, max_height_env_imgs = get_max_dims(r.env_imgs)
 for i in range(p.MAP_TILE_HEIGHT):
     for j in range(p.MAP_TILE_WIDTH):
         x, y = util.tiles_to_pixels(i, j)
-        tile = tile_map[i][j]
+        tile = map_obj.tile_map[i][j]
         tile_objs.append(map_object.MapObject(
             img=tile, traversable=traversability[tile], map_x=x, map_y=y, batch=main_batch, group=background))
         if choices([True, False], weights=[1, 9])[0]:
