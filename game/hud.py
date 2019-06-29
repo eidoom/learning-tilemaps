@@ -47,9 +47,17 @@ class HUD:
     def assign_item(self, number, item_img):
         self.items[number] = self.make_piece(number, item_img, layer=1)
 
+    def assign_inactive(self):
+        self.assign_slot(self.current, self.inv_slot_img)
+
+    def assign_active(self, new_current):
+        self.assign_inactive()
+        self.current = new_current
+        self.assign_slot(self.current, self.inv_current_img)
+
     def on_key_press(self, symbol, modifiers):
         if symbol is self.sheath:
-            self.assign_slot(self.current, self.inv_slot_img)
+            self.assign_inactive()
             self.current = None
         else:
             try:
@@ -59,11 +67,13 @@ class HUD:
 
     def on_key_release(self, symbol, modifiers):
         if symbol in self.num_keys:
-            self.assign_slot(self.current, self.inv_slot_img)
-            self.current = self.slot_dic[symbol]
-            self.assign_slot(self.current, self.inv_current_img)
+            self.assign_active(self.slot_dic[symbol])
 
-    # def update_obj(self):
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        try:
+            self.assign_active((self.current + scroll_y) % self.number_slots)
+        except TypeError:
+            pass
 
 
 if __name__ == "__main__":
