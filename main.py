@@ -53,8 +53,12 @@ fire_symbol = pyglet.sprite.Sprite(img=r.explosion_symbol, x=p.WINDOW_HALF_WIDTH
 tile_objs = []
 env_obj_dict = {}
 
-max_height = max([img.height for img in r.env_imgs])
-max_width = max([img.width for img in r.env_imgs])
+
+def get_max_dims(img_list):
+    return [max([getattr(img, attr) for img in img_list]) for attr in ("width", "height")]
+
+
+max_width_env_imgs, max_height_env_imgs = get_max_dims(r.env_imgs)
 
 for i in range(p.MAP_TILE_HEIGHT):
     for j in range(p.MAP_TILE_WIDTH):
@@ -93,6 +97,13 @@ ai_characters = []
 for _ in range(5 * p.MAP_TILE_SCALE):
     pos = generate_position()
     ai_characters.append(npc.NPC(img=r.char_npc_air, map_x=pos[0], map_y=pos[1], group=foreground, batch=main_batch))
+
+
+def make_ai_chars_dict(ai_chars_list):
+    return {(int(char.x), int(char.y)): char for char in ai_chars_list}
+
+
+max_width_ai_chars, max_height_ai_chars = get_max_dims(r.ai_char_imgs)
 
 protagonist = player.Player(
     c_img=r.player_image, l_img=r.player_left_image, r_img=r.player_right_image,
@@ -133,6 +144,30 @@ def update(dt):
         dy_obj.update_obj(dt)
         dy_obj.check_map_bounds(p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
 
+    # ai_chars_dict = make_ai_chars_dict(ai_characters)
+
+    for ani in animations:
+        if ani.remove:
+            ani.delete()
+            animations.remove(ani)
+
+        # width = int(ani.half_width + max_width_ai_chars // 2)
+        # height = int(ani.half_height + max_height_ai_chars // 2)
+        #
+        # print([key for key in ai_chars_dict.keys()])
+        # print([int(ani.map_x) + xx for xx in range(-width, width + 1)])
+        # exit()
+        #
+        # for x in [int(ani.map_x) + xx for xx in range(-width, width + 1)]:
+        #     for y in [int(ani.map_y) + yy for yy in range(-height, height + 1)]:
+        #         try:
+        #             # print(ai_chars_dict)
+        #             target = ai_chars_dict[(x, y)]
+        #             print(target)
+        #             target.check_attack(ani)
+        #         except KeyError:
+        #             pass
+
     for dude in ai_characters:
         for ani in animations:
             dude.check_attack(ani)
@@ -140,12 +175,7 @@ def update(dt):
             dude.delete()
             ai_characters.remove(dude)
 
-    for ani in animations:
-        if ani.remove:
-            ani.delete()
-            animations.remove(ani)
-
-    protagonist.check_traversability(tile_objs, env_obj_dict, max_width, max_height)
+    protagonist.check_traversability(tile_objs, env_obj_dict, max_width_env_imgs, max_height_env_imgs)
 
     for object_ in tile_objs + list(env_obj_dict.values()) + ai_characters + animations:
         cam.apply(object_)
