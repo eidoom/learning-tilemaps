@@ -58,34 +58,37 @@ class Player(character.Character):
 
         env_objs = []
 
-        for x in [int(self.map_x) + xx for xx in range(-int(self.half_width + max_width + 1), self.half_width + 1)]:
-            for y in [int(self.map_y) + yy for yy in
-                      range(-int(self.half_height + max_height + 1), self.half_height + 1)]:
+        for x in [int(self.col_x()) + xx for xx in
+                  range(-int(self.half_width + max_width + 1) // self.col_res, self.half_width // self.col_res + 1)]:
+            for y in [int(self.col_y()) + yy for yy in
+                      range(-int(self.half_height + max_height + 1) // self.col_res,
+                            self.half_height // self.col_res + 1)]:
                 try:
                     env_objs.append(env_obj_dict[(x, y)])
                 except KeyError:
                     pass
 
         for obj in tiles + env_objs:
-            left = obj.map_x - self.half_width
-            right = obj.map_x + obj.width + self.half_width
-            bottom = obj.map_y - self.half_height
-            top = obj.map_y + obj.height + self.half_height
+            if not obj.traversable:
+                left = obj.map_x - self.half_width
+                right = obj.map_x + obj.width + self.half_width
+                bottom = obj.map_y - self.half_height
+                top = obj.map_y + obj.height + self.half_height
 
-            if all([left < self.map_x < right, bottom < self.map_y < top, not obj.traversable]):
+                if left < self.map_x < right and bottom < self.map_y < top:
 
-                border = 10
-                if bottom + border < self.map_y < top - border:
-                    if self.map_x < obj.map_x + obj.half_width:
-                        self.map_x = left
-                    elif self.map_x > obj.map_x + obj.half_width:
-                        self.map_x = right
+                    border = 10
+                    if bottom + border < self.map_y < top - border:
+                        if self.map_x < obj.map_x + obj.half_width:
+                            self.map_x = left
+                        elif self.map_x > obj.map_x + obj.half_width:
+                            self.map_x = right
 
-                elif left + border < self.map_x < right - border:
-                    if self.map_y < obj.map_y + obj.half_height:
-                        self.map_y = bottom
-                    elif self.map_y > obj.map_y + obj.half_height:
-                        self.map_y = top
+                    elif left + border < self.map_x < right - border:
+                        if self.map_y < obj.map_y + obj.half_height:
+                            self.map_y = bottom
+                        elif self.map_y > obj.map_y + obj.half_height:
+                            self.map_y = top
 
     def on_key_press(self, symbol, modifiers):
         if symbol is self.control["right"]:

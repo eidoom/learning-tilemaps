@@ -57,7 +57,7 @@ for i in range(p.MAP_TILE_HEIGHT):
                 obj = map_object.MapObject(img=r.stone, traversable=True, map_x=obj_x, map_y=obj_y, batch=main_batch,
                                            group=foreground)
             try:
-                env_obj_dict.update({(obj_x, obj_y): obj})
+                env_obj_dict.update({(obj.col_x(), obj.col_y()): obj})
             except NameError:
                 pass
 
