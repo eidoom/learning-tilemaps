@@ -24,9 +24,6 @@ background = pyglet.graphics.OrderedGroup(0)
 foreground = pyglet.graphics.OrderedGroup(1)
 interface_layers = [pyglet.graphics.OrderedGroup(x) for x in (2, 3)]
 
-fps_label = pyglet.text.Label(text=f"FPS : {0}", x=p.WINDOW_WIDTH - 30, y=p.WINDOW_HEIGHT - 10, anchor_x='center',
-                              anchor_y='center', font_size=10, batch=main_batch, group=interface_layers[1])
-
 game_hud = hud.HUD(hud_batch=main_batch, hud_groups=interface_layers, inv_slot_img=r.inventory_slot,
                    inv_select_img=r.inventory_select, inv_current_img=r.inventory_selected, middle=p.WINDOW_HALF_WIDTH,
                    item_imgs=r.attack_symbols)
@@ -105,11 +102,14 @@ for handler in [item for row in [getattr(obj, "event_handlers") for obj in (prot
 
 animations = []
 
+fps_display = pyglet.window.FPSDisplay(game_window)
+
 
 @game_window.event
 def on_draw():
     game_window.clear()
     main_batch.draw()
+    fps_display.draw()
 
 
 attack_affinities = ["fire", "electricity", "ice"]
@@ -161,9 +161,6 @@ def update(dt):
 
     for object_ in tile_objs + list(env_obj_dict.values()) + ai_characters + animations:
         cam.apply(object_)
-
-    fps = pyglet.clock.get_fps()
-    fps_label.text = f"FPS: {int(fps)}"
 
 
 def main():

@@ -12,7 +12,7 @@ class HUD:
         self.item_imgs = item_imgs
 
         self.slot_width = self.inv_slot_img.width
-        self.offset = self.slot_width // 2
+        self.slot_half_width = self.slot_width // 2
 
         # self.key_handler = pyglet.window.key.KeyStateHandler()
         # self.event_handlers = [self, self.key_handler]
@@ -20,8 +20,8 @@ class HUD:
         self.event_handlers = [self]
 
         # Currently make_slot() logic requires odd number of slots
-        self.number_slots = 3
-        self.bar_width = self.number_slots // 2
+        self.number_slots = len(self.item_imgs)
+        self.bar_half_width = self.number_slots // 2
         self.slots = [self.make_piece(index, self.inv_slot_img, layer=0) for index in range(self.number_slots)]
 
         self.current = None
@@ -33,10 +33,13 @@ class HUD:
 
         self.items = [self.make_piece(i, item_img, layer=1) for i, item_img in enumerate(self.item_imgs) if item_img]
 
+    def shift(self, i):
+        return range(-self.bar_half_width, self.bar_half_width + 1)[i] * self.slot_width
+
     def make_piece(self, number, img, layer=0):
         return pyglet.sprite.Sprite(
-            img=img, x=self.middle + range(-self.bar_width, self.bar_width + 1)[number] * self.slot_width,
-            y=self.offset, batch=self.hud_batch, group=self.hud_groups[layer])
+            img=img, x=self.middle + self.shift(number),
+            y=self.slot_half_width, batch=self.hud_batch, group=self.hud_groups[layer])
 
     def assign_slot(self, number, slot_img):
         try:
@@ -71,9 +74,27 @@ class HUD:
 
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
         try:
-            self.assign_active((self.current + scroll_y) % self.number_slots)
+            self.assign_active((self.current + int(scroll_y)) % self.number_slots)
         except TypeError:
             pass
+
+    def x_range(self, x, i):
+        centre = self.middle + self.shift(i)
+        return centre - self.slot_half_width <= x <= centre + self.slot_half_width + 1
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if button is pyglet.window.mouse.LEFT:
+            if y <= self.slot_width:
+                for i in range(self.number_slots):
+                    if self.x_range(x, i):
+                        self.assign_slot(i, self.inv_select_img)
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        if button is pyglet.window.mouse.LEFT:
+            if y <= self.slot_width:
+                for i in range(self.number_slots):
+                    if self.x_range(x, i):
+                        self.assign_active(i)
 
 
 if __name__ == "__main__":
