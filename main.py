@@ -8,7 +8,7 @@ import parameters as p
 from game import camera, util, player, map_object, resources as r, char_air, effect, hud, map, char_fire, char_green, \
     window
 
-weights = [1, 20, 3, 1, 0]
+weights = [0, 20, 3, 0, 0]
 traversability = {r.red_tile: False, r.green_tile: True, r.blue_tile: False, r.black_tile: False, r.sand_tile: True}
 
 map_obj = map.Map(tile_imgs=r.tile_imgs, weights=weights, map_tile_width=p.MAP_TILE_WIDTH,
@@ -31,6 +31,9 @@ game_hud = hud.HUD(hud_batch=main_batch, hud_groups=interface_layers, inv_slot_i
 tile_objs = []
 env_obj_dict = {}
 max_width_env_imgs, max_height_env_imgs = util.get_max_dims(r.env_imgs)
+
+# mvmt_mask = [[traversability[map_obj.get_tile(i, j)] for j in range(p.MAP_TILE_WIDTH)]
+#              for i in range(p.MAP_TILE_HEIGHT)]
 
 for i in range(p.MAP_TILE_HEIGHT):
     for j in range(p.MAP_TILE_WIDTH):
@@ -150,6 +153,7 @@ def update(dt):
     for dy_obj in [protagonist] + ai_characters:
         dy_obj.update_obj(dt)
         dy_obj.check_map_bounds(p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
+        dy_obj.check_traversability(tile_objs, env_obj_dict, max_width_env_imgs, max_height_env_imgs)
 
     # ai_chars_dict = make_ai_chars_dict(ai_characters)
 
@@ -171,8 +175,6 @@ def update(dt):
     for env_obj in env_obj_dict.values():
         for ani in animations:
             env_obj.check_interaction(ani)
-
-    protagonist.check_traversability(tile_objs, env_obj_dict, max_width_env_imgs, max_height_env_imgs)
 
     for object_ in tile_objs + list(env_obj_dict.values()) + ai_characters + animations:
         cam.apply(object_)

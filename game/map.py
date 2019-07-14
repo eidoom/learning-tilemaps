@@ -16,8 +16,8 @@ class Map:
         self.map_tile_half_width = self.map_tile_width // 2
         self.map_tile_half_height = self.map_tile_height // 2
 
-        self.tile_map = self.generate_lawn()
-        # self.tile_map = self.generate_random_map()
+        # self.tile_map = self.generate_lawn()
+        self.tile_map = self.generate_random_map()
 
     def generate_lawn(self):
         return [[self.green for _ in range(self.map_tile_width)] for _ in range(self.map_tile_height)]
