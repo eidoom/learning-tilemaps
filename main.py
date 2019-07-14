@@ -52,13 +52,6 @@ for i in range(p.MAP_TILE_HEIGHT):
             except NameError:
                 pass
 
-for i in range(p.MAP_TILE_HEIGHT):
-    for j in range(p.MAP_TILE_WIDTH):
-        x, y = util.tiles_to_pixels(i, j)
-        tile = map_obj.get_tile(i, j)
-        tile_objs.append(map_object.MapObject(
-            img=tile, traversable=traversability[tile], map_x=x, map_y=y, batch=main_batch, group=background))
-
 env_obj_dict = {}
 max_width_env_imgs, max_height_env_imgs = util.get_max_dims(r.env_imgs)
 
