@@ -14,9 +14,6 @@ class HUD:
         self.slot_width = self.inv_slot_img.width
         self.slot_half_width = self.slot_width // 2
 
-        # self.key_handler = pyglet.window.key.KeyStateHandler()
-        # self.event_handlers = [self, self.key_handler]
-
         self.event_handlers = [self]
 
         # Currently make_slot() logic requires odd number of slots
@@ -25,7 +22,11 @@ class HUD:
         self.slots = [self.make_piece(index, self.inv_slot_img, layer=0) for index in range(self.number_slots)]
 
         self.current = None
-        # self.assign_slot(self.current, self.inv_current_img)
+        try:
+            self.assign_slot(self.current, self.inv_current_img)
+        except TypeError:
+            pass
+        self.highlighted = None
 
         self.num_keys = [getattr(pyglet.window.key, f"_{x}") for x in range(1, self.number_slots + 1)]
         self.slot_dic = {num_key: num for num, num_key in enumerate(self.num_keys)}
@@ -47,11 +48,15 @@ class HUD:
         except TypeError:
             pass
 
+    def highlight_slot(self):
+        self.assign_slot(self.highlighted, self.inv_select_img)
+
     def assign_item(self, number, item_img):
         self.items[number] = self.make_piece(number, item_img, layer=1)
 
     def assign_inactive(self):
         self.assign_slot(self.current, self.inv_slot_img)
+        self.assign_slot(self.highlighted, self.inv_slot_img)
 
     def assign_active(self, new_current):
         self.assign_inactive()
@@ -64,7 +69,8 @@ class HUD:
             self.current = None
         else:
             try:
-                self.assign_slot(self.slot_dic[symbol], self.inv_select_img)
+                self.highlighted = self.slot_dic[symbol]
+                self.highlight_slot()
             except KeyError:
                 pass
 
@@ -87,7 +93,8 @@ class HUD:
             if y <= self.slot_width:
                 for i in range(self.number_slots):
                     if self.x_range(x, i):
-                        self.assign_slot(i, self.inv_select_img)
+                        self.highlighted = i
+                        self.highlight_slot()
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button is pyglet.window.mouse.LEFT:
@@ -95,6 +102,9 @@ class HUD:
                 for i in range(self.number_slots):
                     if self.x_range(x, i):
                         self.assign_active(i)
+
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        pass
 
 
 if __name__ == "__main__":
