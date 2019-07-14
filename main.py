@@ -5,7 +5,8 @@ from random import choices, randrange
 import pyglet
 
 import parameters as p
-from game import camera, util, player, map_object, resources as r, char_air, effect, hud, map, char_fire, char_green
+from game import camera, util, player, map_object, resources as r, char_air, effect, hud, map, char_fire, char_green, \
+    window
 
 weights = [1, 20, 3, 1, 0]
 traversability = {r.red_tile: False, r.green_tile: True, r.blue_tile: False, r.black_tile: False, r.sand_tile: True}
@@ -13,10 +14,9 @@ traversability = {r.red_tile: False, r.green_tile: True, r.blue_tile: False, r.b
 map_obj = map.Map(tile_imgs=r.tile_imgs, weights=weights, map_tile_width=p.MAP_TILE_WIDTH,
                   map_tile_height=p.MAP_TILE_HEIGHT)
 
-game_window = pyglet.window.Window(width=p.WINDOW_WIDTH, height=p.WINDOW_HEIGHT, resizable=True, caption=p.GAME_NAME)
-game_window.set_maximum_size(p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
-game_window.set_minimum_size(*[p.TILE_SIZE * 3] * 2)
-game_window.set_icon(r.player_image)
+game_window = window.Window(width=p.WINDOW_WIDTH, height=p.WINDOW_HEIGHT, resizable=True, caption=p.GAME_NAME,
+                            max_width=p.MAP_PIXEL_WIDTH, max_height=p.MAP_PIXEL_HEIGHT, min_size=p.TILE_SIZE * 3,
+                            icon=r.player_image)
 
 main_batch = pyglet.graphics.Batch()
 
@@ -30,18 +30,12 @@ game_hud = hud.HUD(hud_batch=main_batch, hud_groups=interface_layers, inv_slot_i
 
 tile_objs = []
 env_obj_dict = {}
-
-
-def get_max_dims(img_list):
-    return [max([getattr(img, attr) for img in img_list]) for attr in ("width", "height")]
-
-
-max_width_env_imgs, max_height_env_imgs = get_max_dims(r.env_imgs)
+max_width_env_imgs, max_height_env_imgs = util.get_max_dims(r.env_imgs)
 
 for i in range(p.MAP_TILE_HEIGHT):
     for j in range(p.MAP_TILE_WIDTH):
         x, y = util.tiles_to_pixels(i, j)
-        tile = map_obj.tile_map[i][j]
+        tile = map_obj.get_tile(i, j)
         tile_objs.append(map_object.MapObject(
             img=tile, traversable=traversability[tile], map_x=x, map_y=y, batch=main_batch, group=background))
         if choices([True, False], weights=[1, 9])[0]:
@@ -50,7 +44,35 @@ for i in range(p.MAP_TILE_HEIGHT):
             if tile in (r.green_tile,):
                 obj = map_object.MapObject(img=r.tree, traversable=False, map_x=obj_x, map_y=obj_y, batch=main_batch,
                                            group=foreground)
-            elif tile in (r.black_tile, r.sand_tile):
+            elif tile in (r.sand_tile,):
+                obj = map_object.MapObject(img=r.stone, traversable=True, map_x=obj_x, map_y=obj_y, batch=main_batch,
+                                           group=foreground)
+            try:
+                env_obj_dict.update({(obj.col_x(), obj.col_y()): obj})
+            except NameError:
+                pass
+
+for i in range(p.MAP_TILE_HEIGHT):
+    for j in range(p.MAP_TILE_WIDTH):
+        x, y = util.tiles_to_pixels(i, j)
+        tile = map_obj.get_tile(i, j)
+        tile_objs.append(map_object.MapObject(
+            img=tile, traversable=traversability[tile], map_x=x, map_y=y, batch=main_batch, group=background))
+
+env_obj_dict = {}
+max_width_env_imgs, max_height_env_imgs = util.get_max_dims(r.env_imgs)
+
+for i in range(p.MAP_TILE_HEIGHT):
+    for j in range(p.MAP_TILE_WIDTH):
+        x, y = util.tiles_to_pixels(i, j)
+        tile = map_obj.get_tile(i, j)
+        if choices([True, False], weights=[1, 9])[0]:
+            obj_x = x + randrange(0, tile.width)
+            obj_y = y + randrange(0, tile.height)
+            if tile in (r.green_tile,):
+                obj = map_object.MapObject(img=r.tree, traversable=False, map_x=obj_x, map_y=obj_y, batch=main_batch,
+                                           group=foreground)
+            elif tile in (r.sand_tile,):
                 obj = map_object.MapObject(img=r.stone, traversable=True, map_x=obj_x, map_y=obj_y, batch=main_batch,
                                            group=foreground)
             try:
@@ -73,19 +95,19 @@ def generate_position():
 ai_characters = []
 
 for _ in range(3 * p.MAP_TILE_SCALE):
-    pos = generate_position()
-    ai_characters.append(char_air.CharAir(map_x=pos[0], map_y=pos[1], group=foreground, batch=main_batch))
-    pos = generate_position()
-    ai_characters.append(char_fire.CharFire(map_x=pos[0], map_y=pos[1], group=foreground, batch=main_batch))
-    pos = generate_position()
-    ai_characters.append(char_green.CharGreen(map_x=pos[0], map_y=pos[1], group=foreground, batch=main_batch))
+    x, y = generate_position()
+    ai_characters.append(char_air.CharAir(map_x=x, map_y=y, group=foreground, batch=main_batch))
+    x, y = generate_position()
+    ai_characters.append(char_fire.CharFire(map_x=x, map_y=y, group=foreground, batch=main_batch))
+    x, y = generate_position()
+    ai_characters.append(char_green.CharGreen(map_x=x, map_y=y, group=foreground, batch=main_batch))
 
 
 def make_ai_chars_dict(ai_chars_list):
     return {(int(char.x), int(char.y)): char for char in ai_chars_list}
 
 
-max_width_ai_chars, max_height_ai_chars = get_max_dims(r.ai_char_imgs)
+max_width_ai_chars, max_height_ai_chars = util.get_max_dims(r.ai_char_imgs)
 
 protagonist = player.Player(
     c_img=r.player_image, l_img=r.player_left_image, r_img=r.player_right_image,
