@@ -1,3 +1,6 @@
+from game import util
+
+
 class Camera:
     def __init__(self, win_width, win_height, map_width, map_height):
         # Camera position is coordinate of bottom left of visible rectangle.
@@ -7,6 +10,7 @@ class Camera:
         self.win_height = win_height
         self.map_width = map_width
         self.map_height = map_height
+        self.i, self.j = util.pixels_to_tiles(self.x, self.y)
 
     def initialise(self, target):
         target.map_x = target.x + self.x
@@ -34,6 +38,8 @@ class Camera:
             target.y = target.map_y - self.y
         else:
             self.y = target.map_y - self.win_height // 2
+
+        self.i, self.j = util.pixels_to_tiles(self.x, self.y)
 
 
 if __name__ == "__main__":

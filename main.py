@@ -14,17 +14,17 @@ traversability = {r.red_tile: False, r.green_tile: True, r.blue_tile: False, r.b
 map_obj = map.Map(tile_imgs=r.tile_imgs, weights=weights, map_tile_width=p.MAP_TILE_WIDTH,
                   map_tile_height=p.MAP_TILE_HEIGHT)
 
-game_window = window.Window(width=p.WINDOW_WIDTH, height=p.WINDOW_HEIGHT, resizable=True, caption=p.GAME_NAME,
-                            max_width=p.MAP_PIXEL_WIDTH, max_height=p.MAP_PIXEL_HEIGHT, min_size=p.TILE_SIZE * 3,
-                            icon=r.player_image)
+game_window = window.GameWindow(width=p.WINDOW_WIDTH, height=p.WINDOW_HEIGHT, caption=p.GAME_NAME,
+                                max_width=p.MAP_PIXEL_WIDTH, max_height=p.MAP_PIXEL_HEIGHT,
+                                min_size=p.TILE_SIZE * 3, icon=r.player_image)
 
-main_batch = pyglet.graphics.Batch()
+game_batch = pyglet.graphics.Batch()
 
 background = pyglet.graphics.OrderedGroup(0)
 foreground = pyglet.graphics.OrderedGroup(1)
 interface_layers = [pyglet.graphics.OrderedGroup(x) for x in (2, 3)]
 
-game_hud = hud.HUD(hud_batch=main_batch, hud_groups=interface_layers, inv_slot_img=r.inventory_slot,
+game_hud = hud.HUD(hud_batch=game_batch, hud_groups=interface_layers, inv_slot_img=r.inventory_slot,
                    inv_select_img=r.inventory_select, inv_current_img=r.inventory_selected, middle=p.WINDOW_HALF_WIDTH,
                    item_imgs=r.attack_symbols)
 
@@ -40,41 +40,20 @@ for i in range(p.MAP_TILE_HEIGHT):
         x, y = util.tiles_to_pixels(i, j)
         tile = map_obj.get_tile(i, j)
         tile_objs.append(map_object.MapObject(
-            img=tile, traversable=traversability[tile], map_x=x, map_y=y, batch=main_batch, group=background))
-        if choices([True, False], weights=[1, 9])[0]:
-            obj_x = x + randrange(0, tile.width)
-            obj_y = y + randrange(0, tile.height)
-            if tile in (r.green_tile,):
-                obj = map_object.MapObject(img=r.tree, traversable=False, map_x=obj_x, map_y=obj_y, batch=main_batch,
-                                           group=foreground)
-            elif tile in (r.sand_tile,):
-                obj = map_object.MapObject(img=r.stone, traversable=True, map_x=obj_x, map_y=obj_y, batch=main_batch,
-                                           group=foreground)
-            try:
-                env_obj_dict.update({(obj.col_x(), obj.col_y()): obj})
-            except NameError:
-                pass
-
-env_obj_dict = {}
-max_width_env_imgs, max_height_env_imgs = util.get_max_dims(r.env_imgs)
-
-for i in range(p.MAP_TILE_HEIGHT):
-    for j in range(p.MAP_TILE_WIDTH):
-        x, y = util.tiles_to_pixels(i, j)
-        tile = map_obj.get_tile(i, j)
-        if choices([True, False], weights=[1, 9])[0]:
-            obj_x = x + randrange(0, tile.width)
-            obj_y = y + randrange(0, tile.height)
-            if tile in (r.green_tile,):
-                obj = map_object.MapObject(img=r.tree, traversable=False, map_x=obj_x, map_y=obj_y, batch=main_batch,
-                                           group=foreground)
-            elif tile in (r.sand_tile,):
-                obj = map_object.MapObject(img=r.stone, traversable=True, map_x=obj_x, map_y=obj_y, batch=main_batch,
-                                           group=foreground)
-            try:
-                env_obj_dict.update({(obj.col_x(), obj.col_y()): obj})
-            except NameError:
-                pass
+            img=tile, traversable=traversability[tile], map_x=x, map_y=y, batch=None, group=background))
+        # if choices([True, False], weights=[1, 9])[0]:
+        #     obj_x = x + randrange(0, tile.width)
+        #     obj_y = y + randrange(0, tile.height)
+        #     if tile in (r.green_tile,):
+        #         obj = map_object.MapObject(img=r.tree, traversable=False, map_x=obj_x, map_y=obj_y, batch=main_batch,
+        #                                    group=foreground)
+        #     elif tile in (r.sand_tile,):
+        #         obj = map_object.MapObject(img=r.stone, traversable=True, map_x=obj_x, map_y=obj_y, batch=main_batch,
+        #                                    group=foreground)
+        #     try:
+        #         env_obj_dict.update({(obj.col_x(), obj.col_y()): obj})
+        #     except NameError:
+        #         pass
 
 scale = p.TILE_SIZE / r.tile_imgs[0].width
 
@@ -90,13 +69,14 @@ def generate_position():
 
 ai_characters = []
 
-for _ in range(3 * p.MAP_TILE_SCALE):
-    x, y = generate_position()
-    ai_characters.append(char_air.CharAir(map_x=x, map_y=y, group=foreground, batch=main_batch))
-    x, y = generate_position()
-    ai_characters.append(char_fire.CharFire(map_x=x, map_y=y, group=foreground, batch=main_batch))
-    x, y = generate_position()
-    ai_characters.append(char_green.CharGreen(map_x=x, map_y=y, group=foreground, batch=main_batch))
+
+# for _ in range(3 * p.MAP_TILE_SCALE):
+#     x, y = generate_position()
+#     ai_characters.append(char_air.CharAir(map_x=x, map_y=y, group=foreground, batch=main_batch))
+#     x, y = generate_position()
+#     ai_characters.append(char_fire.CharFire(map_x=x, map_y=y, group=foreground, batch=main_batch))
+#     x, y = generate_position()
+#     ai_characters.append(char_green.CharGreen(map_x=x, map_y=y, group=foreground, batch=main_batch))
 
 
 def make_ai_chars_dict(ai_chars_list):
@@ -109,7 +89,7 @@ protagonist = player.Player(
     c_img=r.player_image, l_img=r.player_left_image, r_img=r.player_right_image,
     c_ani=r.player_animation, l_ani=r.player_left_animation, r_ani=r.player_right_animation,
     x=game_window.width // 2, y=game_window.height // 2, map_x=p.MAP_PIXEL_HALF_WIDTH, map_y=p.MAP_PIXEL_HALF_HEIGHT,
-    batch=main_batch, group=foreground)
+    batch=game_batch, group=foreground)
 
 for handler in [item for row in [getattr(obj, "event_handlers") for obj in (protagonist, game_hud)] for item in row]:
     game_window.push_handlers(handler)
@@ -126,22 +106,46 @@ fps_display = pyglet.window.FPSDisplay(game_window)
 @game_window.event
 def on_draw():
     game_window.clear()
-    main_batch.draw()
+    game_batch.draw()
     fps_display.draw()
 
 
 attack_affinities = ["fire", "electricity", "ice"]
+
+cam.update(protagonist)
+
+
+def get_tile(i_, j_):
+    return tile_objs[util.nested_ref_to_list_ref(i_, j_)]
+
+
+def set_tiles_batch(i_range, j_range, batch=None):
+    for i_ in [cam.i - a for a in i_range]:
+        for j_ in [cam.j + b for b in j_range]:
+            try:
+                get_tile(i_, j_).batch = batch
+            except IndexError:
+                pass
+
+
+set_tiles_batch(range(p.WINDOW_TILE_HEIGHT + 1), range(p.WINDOW_TILE_WIDTH + 1), game_batch)
+# set_tiles_batch(range(p.MAP_TILE_HEIGHT + 1), range(p.MAP_TILE_WIDTH + 1), game_batch)
 
 
 def update(dt):
     if not protagonist.remove:
         cam.update(protagonist)
 
+    set_tiles_batch((-1, p.WINDOW_TILE_HEIGHT + 2), range(-1, p.WINDOW_TILE_WIDTH + 2))
+    set_tiles_batch(range(-1, p.WINDOW_TILE_HEIGHT + 2), (-1, p.WINDOW_TILE_WIDTH + 2))
+    set_tiles_batch((0, p.WINDOW_TILE_HEIGHT + 1), range(p.WINDOW_TILE_WIDTH + 1), game_batch)
+    set_tiles_batch(range(p.WINDOW_TILE_HEIGHT + 1), (0, p.WINDOW_TILE_WIDTH + 1), game_batch)
+
     if protagonist.effect:
         try:
             new_ani = effect.Effect(
                 img=r.attack_animations[protagonist.current], affinity=attack_affinities[protagonist.current],
-                x=protagonist.effect_x, y=protagonist.effect_y, group=foreground, batch=main_batch)
+                x=protagonist.effect_x, y=protagonist.effect_y, group=foreground, batch=game_batch)
             cam.initialise(new_ani)
             animations.append(new_ani)
         except AttributeError or TypeError:
@@ -168,7 +172,7 @@ def update(dt):
             dude.delete()
             ai_characters.remove(dude)
         if protagonist.check_collision(dude) and not protagonist.remove:
-            effect.Effect(img=r.smoke, x=protagonist.x, y=protagonist.y, group=foreground, batch=main_batch)
+            effect.Effect(img=r.smoke, x=protagonist.x, y=protagonist.y, group=foreground, batch=game_batch)
             protagonist.remove = True
             protagonist.visible = False
 

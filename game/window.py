@@ -1,7 +1,7 @@
 import pyglet
 
 
-class Window(pyglet.window.Window):
+class GameWindow(pyglet.window.Window):
     def __init__(self, max_width, max_height, min_size, icon, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
