@@ -119,7 +119,7 @@ def get_tile(i_, j_):
     return tile_objs[util.nested_ref_to_list_ref(i_, j_)]
 
 
-def set_tiles_batch(i_range, j_range, batch=None):
+def set_tiles_batch(i_range, j_range, batch):
     for i_ in [cam.i - a for a in i_range]:
         for j_ in [cam.j + b for b in j_range]:
             try:
@@ -128,7 +128,17 @@ def set_tiles_batch(i_range, j_range, batch=None):
                 pass
 
 
-set_tiles_batch(range(p.WINDOW_TILE_HEIGHT + 1), range(p.WINDOW_TILE_WIDTH + 1), game_batch)
+out_view_i = (-1, p.WINDOW_TILE_HEIGHT + 2)
+out_view_j = (-1, p.WINDOW_TILE_WIDTH + 2)
+in_view_i = (0, p.WINDOW_TILE_HEIGHT + 1)
+in_view_j = (0, p.WINDOW_TILE_WIDTH + 1)
+
+# out_view_i = (-1, p.WINDOW_TILE_HEIGHT + 1)
+# out_view_j = (-1, p.WINDOW_TILE_WIDTH + 1)
+# in_view_i = (0, p.WINDOW_TILE_HEIGHT)
+# in_view_j = (0, p.WINDOW_TILE_WIDTH)
+
+set_tiles_batch(range(*out_view_i), range(*out_view_j), game_batch)
 # set_tiles_batch(range(p.MAP_TILE_HEIGHT + 1), range(p.MAP_TILE_WIDTH + 1), game_batch)
 
 
@@ -136,10 +146,24 @@ def update(dt):
     if not protagonist.remove:
         cam.update(protagonist)
 
-    set_tiles_batch((-1, p.WINDOW_TILE_HEIGHT + 2), range(-1, p.WINDOW_TILE_WIDTH + 2))
-    set_tiles_batch(range(-1, p.WINDOW_TILE_HEIGHT + 2), (-1, p.WINDOW_TILE_WIDTH + 2))
-    set_tiles_batch((0, p.WINDOW_TILE_HEIGHT + 1), range(p.WINDOW_TILE_WIDTH + 1), game_batch)
-    set_tiles_batch(range(p.WINDOW_TILE_HEIGHT + 1), (0, p.WINDOW_TILE_WIDTH + 1), game_batch)
+    set_tiles_batch(out_view_i, range(*out_view_j), None)
+    set_tiles_batch(range(*out_view_i), out_view_j, None)
+    set_tiles_batch(in_view_i, range(*in_view_j), game_batch)
+    set_tiles_batch(range(*in_view_i), in_view_j, game_batch)
+
+    # if cam.i > cam.last_i:
+    #     set_tiles_batch((out_view_i[1],), range(*out_view_j), None)
+    #     set_tiles_batch((in_view_i[0],), range(*in_view_j), game_batch)
+    # elif cam.i < cam.last_i:
+    #     set_tiles_batch((out_view_i[0],), range(*out_view_j), None)
+    #     set_tiles_batch((in_view_i[1],), range(*in_view_j), game_batch)
+    #
+    # if cam.j > cam.last_j:
+    #     set_tiles_batch(range(*out_view_i), (out_view_j[0],), None)
+    #     set_tiles_batch(range(*in_view_i), (in_view_j[1],), game_batch)
+    # elif cam.j < cam.last_j:
+    #     set_tiles_batch(range(*out_view_i), (out_view_j[1],), None)
+    #     set_tiles_batch(range(*in_view_i), (in_view_j[0],), game_batch)
 
     if protagonist.effect:
         try:

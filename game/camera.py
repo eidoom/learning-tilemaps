@@ -11,6 +11,8 @@ class Camera:
         self.map_width = map_width
         self.map_height = map_height
         self.i, self.j = util.pixels_to_tiles(self.x, self.y)
+        # self.last_i = self.i
+        # self.last_j = self.j
 
     def initialise(self, target):
         target.map_x = target.x + self.x
@@ -39,6 +41,8 @@ class Camera:
         else:
             self.y = target.map_y - self.win_height // 2
 
+        # self.last_i = self.i
+        # self.last_j = self.j
         self.i, self.j = util.pixels_to_tiles(self.x, self.y)
 
 
