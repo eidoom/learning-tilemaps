@@ -41,19 +41,19 @@ for i in range(p.MAP_TILE_HEIGHT):
         tile = map_obj.get_tile(i, j)
         tile_objs.append(map_object.MapObject(
             img=tile, traversable=traversability[tile], map_x=x, map_y=y, batch=None, group=background))
-        # if choices([True, False], weights=[1, 9])[0]:
-        #     obj_x = x + randrange(0, tile.width)
-        #     obj_y = y + randrange(0, tile.height)
-        #     if tile in (r.green_tile,):
-        #         obj = map_object.MapObject(img=r.tree, traversable=False, map_x=obj_x, map_y=obj_y, batch=main_batch,
-        #                                    group=foreground)
-        #     elif tile in (r.sand_tile,):
-        #         obj = map_object.MapObject(img=r.stone, traversable=True, map_x=obj_x, map_y=obj_y, batch=main_batch,
-        #                                    group=foreground)
-        #     try:
-        #         env_obj_dict.update({(obj.col_x(), obj.col_y()): obj})
-        #     except NameError:
-        #         pass
+        if choices([True, False], weights=[1, 9])[0]:
+            obj_x = x + randrange(0, tile.width)
+            obj_y = y + randrange(0, tile.height)
+            if tile in (r.green_tile,):
+                obj = map_object.MapObject(img=r.tree, traversable=False, map_x=obj_x, map_y=obj_y, batch=game_batch,
+                                           group=foreground)
+            elif tile in (r.sand_tile,):
+                obj = map_object.MapObject(img=r.stone, traversable=True, map_x=obj_x, map_y=obj_y, batch=game_batch,
+                                           group=foreground)
+            try:
+                env_obj_dict.update({(obj.col_x(), obj.col_y()): obj})
+            except NameError:
+                pass
 
 scale = p.TILE_SIZE / r.tile_imgs[0].width
 
@@ -70,13 +70,13 @@ def generate_position():
 ai_characters = []
 
 
-# for _ in range(3 * p.MAP_TILE_SCALE):
-#     x, y = generate_position()
-#     ai_characters.append(char_air.CharAir(map_x=x, map_y=y, group=foreground, batch=main_batch))
-#     x, y = generate_position()
-#     ai_characters.append(char_fire.CharFire(map_x=x, map_y=y, group=foreground, batch=main_batch))
-#     x, y = generate_position()
-#     ai_characters.append(char_green.CharGreen(map_x=x, map_y=y, group=foreground, batch=main_batch))
+for _ in range(3 * p.MAP_TILE_SCALE):
+    x, y = generate_position()
+    ai_characters.append(char_air.CharAir(map_x=x, map_y=y, group=foreground, batch=game_batch))
+    x, y = generate_position()
+    ai_characters.append(char_fire.CharFire(map_x=x, map_y=y, group=foreground, batch=game_batch))
+    x, y = generate_position()
+    ai_characters.append(char_green.CharGreen(map_x=x, map_y=y, group=foreground, batch=game_batch))
 
 
 def make_ai_chars_dict(ai_chars_list):
@@ -128,28 +128,28 @@ def set_tiles_batch(i_range, j_range, batch):
                 pass
 
 
-out_view_i = (-1, p.WINDOW_TILE_HEIGHT + 2)
-out_view_j = (-1, p.WINDOW_TILE_WIDTH + 2)
-in_view_i = (0, p.WINDOW_TILE_HEIGHT + 1)
-in_view_j = (0, p.WINDOW_TILE_WIDTH + 1)
+# out_view_i = (-1, p.WINDOW_TILE_HEIGHT + 2)
+# out_view_j = (-1, p.WINDOW_TILE_WIDTH + 2)
+# in_view_i = (0, p.WINDOW_TILE_HEIGHT + 1)
+# in_view_j = (0, p.WINDOW_TILE_WIDTH + 1)
 
 # out_view_i = (-1, p.WINDOW_TILE_HEIGHT + 1)
 # out_view_j = (-1, p.WINDOW_TILE_WIDTH + 1)
 # in_view_i = (0, p.WINDOW_TILE_HEIGHT)
 # in_view_j = (0, p.WINDOW_TILE_WIDTH)
 
-set_tiles_batch(range(*out_view_i), range(*out_view_j), game_batch)
-# set_tiles_batch(range(p.MAP_TILE_HEIGHT + 1), range(p.MAP_TILE_WIDTH + 1), game_batch)
+# set_tiles_batch(range(*out_view_i), range(*out_view_j), game_batch)
+set_tiles_batch(range(p.MAP_TILE_HEIGHT + 1), range(p.MAP_TILE_WIDTH + 1), game_batch)
 
 
 def update(dt):
     if not protagonist.remove:
         cam.update(protagonist)
 
-    set_tiles_batch(out_view_i, range(*out_view_j), None)
-    set_tiles_batch(range(*out_view_i), out_view_j, None)
-    set_tiles_batch(in_view_i, range(*in_view_j), game_batch)
-    set_tiles_batch(range(*in_view_i), in_view_j, game_batch)
+    # set_tiles_batch(out_view_i, range(*out_view_j), None)
+    # set_tiles_batch(range(*out_view_i), out_view_j, None)
+    # set_tiles_batch(in_view_i, range(*in_view_j), game_batch)
+    # set_tiles_batch(range(*in_view_i), in_view_j, game_batch)
 
     # if cam.i > cam.last_i:
     #     set_tiles_batch((out_view_i[1],), range(*out_view_j), None)
