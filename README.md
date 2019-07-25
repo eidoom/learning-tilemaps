@@ -1,7 +1,20 @@
 # learning-tilemaps
 
-* Needs `Python 3` and Python package `pyglet`
+## Installation
 
-* Run with `python3 main.py`
+* Needs `Python 3` and Python package `pyglet`.
 
-* Move your character with WASD keys, hold left shift key to sprint
+* The `master` branch is the testing branch. The `stable` branch should be bug-free. The stable branch is recommended 
+for playing (reminder: switch to it with `git checkout stable`).
+
+* Run with `python3 main.py`.
+
+## Instructions for playing
+
+* Move your character with WASD keys (all keyboard key references are lower case), hold left shift key to sprint.
+
+* Select interaction from bottom menu by clicking the corresponding number on the keyboard, clicking the icon with the 
+mouse, or scrolling the mouse wheel. Deselect by pressing Q on the keyboard. Click with the mouse on the screen to use 
+the interaction. It will only work within a small interaction range (i.e. distances from your character).  
+
+* If you are touched by an enemy, you will die. Restart the game by closing the window and running the program again.
