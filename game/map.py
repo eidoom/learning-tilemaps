@@ -2,7 +2,9 @@ from random import choices
 
 
 class Map:
-    def __init__(self, tile_imgs, weights, map_tile_width, map_tile_height):
+    def __init__(self, tile_imgs, weights, map_tile_width, map_tile_height, tile_size):
+        self.tile_size = tile_size
+
         self.tile_imgs = tile_imgs
 
         self.green = self.tile_imgs[1]
@@ -10,11 +12,18 @@ class Map:
         self.sand = self.tile_imgs[4]
 
         self.weights = weights
+
         self.map_tile_width = map_tile_width
         self.map_tile_height = map_tile_height
 
         self.map_tile_half_width = self.map_tile_width // 2
         self.map_tile_half_height = self.map_tile_height // 2
+
+        self.width = self.map_tile_width * self.tile_size
+        self.height = self.map_tile_height * self.tile_size
+
+        self.half_width = self.width // 2
+        self.half_height = self.height // 2
 
         self.tile_map = self.generate_lawn()
         # self.tile_map = self.generate_random_map()

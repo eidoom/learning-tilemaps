@@ -12,11 +12,12 @@ weights = [0, 20, 3, 0, 0]
 traversability = {r.red_tile: False, r.green_tile: True, r.blue_tile: False, r.black_tile: False, r.sand_tile: True}
 
 map_obj = map.Map(tile_imgs=r.tile_imgs, weights=weights, map_tile_width=p.MAP_TILE_WIDTH,
-                  map_tile_height=p.MAP_TILE_HEIGHT)
+                  map_tile_height=p.MAP_TILE_HEIGHT, tile_size=p.TILE_SIZE)
 
-game_window = window.GameWindow(width=p.WINDOW_WIDTH, height=p.WINDOW_HEIGHT, caption=p.GAME_NAME,
-                                max_width=p.MAP_PIXEL_WIDTH, max_height=p.MAP_PIXEL_HEIGHT,
-                                min_size=p.TILE_SIZE * 3, icon=r.player_image)
+game_window = window.GameWindow(caption=p.GAME_NAME, fullscreen=p.FULLSCREEN,
+                                max_width=map_obj.width, max_height=map_obj.height,
+                                min_size=p.TILE_SIZE * 3, icon=r.player_image, tile_size=p.TILE_SIZE,
+                                width=p.WINDOW_WIDTH, height=p.WINDOW_HEIGHT)
 
 game_batch = pyglet.graphics.Batch()
 
@@ -25,8 +26,8 @@ foreground = pyglet.graphics.OrderedGroup(1)
 interface_layers = [pyglet.graphics.OrderedGroup(x) for x in (2, 3)]
 
 game_hud = hud.HUD(hud_batch=game_batch, hud_groups=interface_layers, inv_slot_img=r.inventory_slot,
-                   inv_select_img=r.inventory_select, inv_current_img=r.inventory_selected, middle=p.WINDOW_HALF_WIDTH,
-                   item_imgs=r.attack_symbols)
+                   inv_select_img=r.inventory_select, inv_current_img=r.inventory_selected,
+                   middle=game_window.half_width, item_imgs=r.attack_symbols)
 
 tile_objs = []
 env_obj_dict = {}
@@ -60,11 +61,11 @@ scale = p.TILE_SIZE / r.tile_imgs[0].width
 for tile in tile_objs:
     tile.scale = scale
 
-cam = camera.Camera(game_window.width, game_window.height, p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
+cam = camera.Camera(game_window.width, game_window.height, map_obj.width, map_obj.height)
 
 
 def generate_position():
-    return randrange(0, p.MAP_PIXEL_WIDTH), randrange(0, p.MAP_PIXEL_HEIGHT)
+    return randrange(0, map_obj.width), randrange(0, map_obj.height)
 
 
 ai_characters = []
@@ -88,7 +89,7 @@ max_width_ai_chars, max_height_ai_chars = util.get_max_dims(r.ai_char_imgs)
 protagonist = player.Player(
     c_img=r.player_image, l_img=r.player_left_image, r_img=r.player_right_image,
     c_ani=r.player_animation, l_ani=r.player_left_animation, r_ani=r.player_right_animation,
-    x=game_window.width // 2, y=game_window.height // 2, map_x=p.MAP_PIXEL_HALF_WIDTH, map_y=p.MAP_PIXEL_HALF_HEIGHT,
+    x=game_window.width // 2, y=game_window.height // 2, map_x=map_obj.half_width, map_y=map_obj.half_height,
     batch=game_batch, group=foreground)
 
 for handler in [item for row in [getattr(obj, "event_handlers") for obj in (protagonist, game_hud)] for item in row]:
@@ -100,14 +101,12 @@ for handler in [item for row in [getattr(obj, "event_handlers") for obj in (prot
 
 animations = []
 
-fps_display = pyglet.window.FPSDisplay(game_window)
-
 
 @game_window.event
 def on_draw():
     game_window.clear()
     game_batch.draw()
-    fps_display.draw()
+    game_window.fps_display.draw()
 
 
 attack_affinities = ["fire", "electricity", "ice"]
@@ -140,10 +139,10 @@ def activate_tiles(i_range, j_range, active):
                 pass
 
 
-out_view_i = [-1, p.WINDOW_TILE_HEIGHT + 1]
-out_view_j = [-1, p.WINDOW_TILE_WIDTH + 1]
-in_view_i = [0, p.WINDOW_TILE_HEIGHT]
-in_view_j = [0, p.WINDOW_TILE_WIDTH]
+out_view_i = [-1, game_window.tile_height + 1]
+out_view_j = [-1, game_window.tile_width + 1]
+in_view_i = [0, game_window.tile_height]
+in_view_j = [0, game_window.tile_width]
 
 out_view_i_range = out_view_i.copy()
 out_view_i_range[1] += 1
@@ -190,7 +189,7 @@ def update(dt):
 
     for dy_obj in [protagonist] + ai_characters:
         dy_obj.update_obj(dt)
-        dy_obj.check_map_bounds(p.MAP_PIXEL_WIDTH, p.MAP_PIXEL_HEIGHT)
+        dy_obj.check_map_bounds(map_obj.width, map_obj.height)
         dy_obj.check_traversability(tile_objs, env_obj_dict, max_width_env_imgs, max_height_env_imgs)
 
     # ai_chars_dict = make_ai_chars_dict(ai_characters)
