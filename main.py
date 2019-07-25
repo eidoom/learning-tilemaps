@@ -152,24 +152,19 @@ def update(dt):
     if not protagonist.remove:
         cam.update(protagonist)
 
-    set_tiles_batch((-1, p.WINDOW_TILE_HEIGHT + 1), range(*out_view_j_range), None)
-    set_tiles_batch(range(*out_view_i_range), (-1, p.WINDOW_TILE_WIDTH + 1), None)
-    set_tiles_batch((0, p.WINDOW_TILE_HEIGHT), range(*in_view_j_range), game_batch)
-    set_tiles_batch(range(*in_view_i_range), (0, p.WINDOW_TILE_WIDTH), game_batch)
+    if cam.i > cam.last_i:
+        set_tiles_batch((out_view_i[1],), range(*out_view_j_range), None)
+        set_tiles_batch((in_view_i[0],), range(*in_view_j_range), game_batch)
+    elif cam.i < cam.last_i:
+        set_tiles_batch((out_view_i[0],), range(*out_view_j_range), None)
+        set_tiles_batch((in_view_i[1],), range(*in_view_j_range), game_batch)
 
-    # if cam.i > cam.last_i:
-    #     set_tiles_batch((out_view_i[1],), range(*out_view_j), None)
-    #     set_tiles_batch((in_view_i[0],), range(*in_view_j), game_batch)
-    # elif cam.i < cam.last_i:
-    #     set_tiles_batch((out_view_i[0],), range(*out_view_j), None)
-    #     set_tiles_batch((in_view_i[1],), range(*in_view_j), game_batch)
-    #
-    # if cam.j > cam.last_j:
-    #     set_tiles_batch(range(*out_view_i), (out_view_j[0],), None)
-    #     set_tiles_batch(range(*in_view_i), (in_view_j[1],), game_batch)
-    # elif cam.j < cam.last_j:
-    #     set_tiles_batch(range(*out_view_i), (out_view_j[1],), None)
-    #     set_tiles_batch(range(*in_view_i), (in_view_j[0],), game_batch)
+    if cam.j > cam.last_j:
+        set_tiles_batch(range(*out_view_i_range), (out_view_j[0],), None)
+        set_tiles_batch(range(*in_view_i_range), (in_view_j[1],), game_batch)
+    elif cam.j < cam.last_j:
+        set_tiles_batch(range(*out_view_i_range), (out_view_j[1],), None)
+        set_tiles_batch(range(*in_view_i_range), (in_view_j[0],), game_batch)
 
     if protagonist.effect:
         try:
