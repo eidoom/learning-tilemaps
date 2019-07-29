@@ -8,7 +8,7 @@ import parameters as p
 from game import camera, util, player, map_object, resources as r, char_air, effect, hud, map, char_fire, char_green, \
     window
 
-weights = [0, 20, 3, 0, 0]
+weights = [0, 10, 1, 0, 0]
 traversability = {r.red_tile: False, r.green_tile: True, r.blue_tile: False, r.black_tile: False, r.sand_tile: True}
 
 map_obj = map.Map(tile_imgs=r.tile_imgs, weights=weights, map_tile_width=p.MAP_TILE_WIDTH,
@@ -42,19 +42,19 @@ for i in range(p.MAP_TILE_HEIGHT):
         tile = map_obj.get_tile(i, j)
         tile_objs.append(map_object.MapObject(
             img=tile, traversable=traversability[tile], map_x=x, map_y=y, batch=None, group=background))
-        # if choices([True, False], weights=[1, 9])[0]:
-        #     obj_x = x + randrange(0, tile.width)
-        #     obj_y = y + randrange(0, tile.height)
-        #     if tile in (r.green_tile,):
-        #         obj = map_object.MapObject(img=r.tree, traversable=False, map_x=obj_x, map_y=obj_y, batch=main_batch,
-        #                                    group=foreground)
-        #     elif tile in (r.sand_tile,):
-        #         obj = map_object.MapObject(img=r.stone, traversable=True, map_x=obj_x, map_y=obj_y, batch=main_batch,
-        #                                    group=foreground)
-        #     try:
-        #         env_obj_dict.update({(obj.col_x(), obj.col_y()): obj})
-        #     except NameError:
-        #         pass
+        if choices([True, False], weights=[1, 9])[0]:
+            obj_x = x + randrange(0, tile.width)
+            obj_y = y + randrange(0, tile.height)
+            if tile in (r.green_tile,):
+                obj = map_object.MapObject(img=r.tree, traversable=False, map_x=obj_x, map_y=obj_y, batch=game_batch,
+                                           group=foreground)
+            elif tile in (r.sand_tile,):
+                obj = map_object.MapObject(img=r.stone, traversable=True, map_x=obj_x, map_y=obj_y, batch=game_batch,
+                                           group=foreground)
+            try:
+                env_obj_dict.update({(obj.col_x(), obj.col_y()): obj})
+            except NameError:
+                pass
 
 scale = p.TILE_SIZE / r.tile_imgs[0].width
 
@@ -70,21 +70,20 @@ def generate_position():
 
 ai_characters = []
 
-
-# for _ in range(3 * p.MAP_TILE_SCALE):
-#     x, y = generate_position()
-#     ai_characters.append(char_air.CharAir(map_x=x, map_y=y, group=foreground, batch=main_batch))
-#     x, y = generate_position()
-#     ai_characters.append(char_fire.CharFire(map_x=x, map_y=y, group=foreground, batch=main_batch))
-#     x, y = generate_position()
-#     ai_characters.append(char_green.CharGreen(map_x=x, map_y=y, group=foreground, batch=main_batch))
-
-
-def make_ai_chars_dict(ai_chars_list):
-    return {(int(char.x), int(char.y)): char for char in ai_chars_list}
+for _ in range(3 * p.MAP_TILE_SCALE):
+    x, y = generate_position()
+    ai_characters.append(char_air.CharAir(map_x=x, map_y=y, group=foreground, batch=game_batch))
+    x, y = generate_position()
+    ai_characters.append(char_fire.CharFire(map_x=x, map_y=y, group=foreground, batch=game_batch))
+    x, y = generate_position()
+    ai_characters.append(char_green.CharGreen(map_x=x, map_y=y, group=foreground, batch=game_batch))
 
 
-max_width_ai_chars, max_height_ai_chars = util.get_max_dims(r.ai_char_imgs)
+# def make_ai_chars_dict(ai_chars_list):
+#     return {(int(char.x), int(char.y)): char for char in ai_chars_list}
+
+
+# max_width_ai_chars, max_height_ai_chars = util.get_max_dims(r.ai_char_imgs)
 
 protagonist = player.Player(
     c_img=r.player_image, l_img=r.player_left_image, r_img=r.player_right_image,
@@ -105,8 +104,11 @@ animations = []
 @game_window.event
 def on_draw():
     game_window.clear()
-    game_batch.draw()
-    game_window.fps_display.draw()
+    if game_window.overlay:
+        game_window.overlay.draw()
+    else:
+        game_batch.draw()
+        game_window.fps_display.draw()
 
 
 attack_affinities = ["fire", "electricity", "ice"]
@@ -157,67 +159,72 @@ activate_tiles(range(*in_view_i_range), range(*in_view_j_range), True)
 
 
 def update(dt):
-    if not protagonist.remove:
-        cam.update(protagonist)
+    if game_window.overlay:
+        game_window.overlay.update(dt)
 
-    if cam.i > cam.last_i:
-        activate_tiles((out_view_i[1],), range(*out_view_j_range), False)
-        activate_tiles((in_view_i[0],), range(*in_view_j_range), True)
-    elif cam.i < cam.last_i:
-        activate_tiles((out_view_i[0],), range(*out_view_j_range), False)
-        activate_tiles((in_view_i[1],), range(*in_view_j_range), True)
+    else:
+        if not protagonist.remove:
+            cam.update(protagonist)
 
-    if cam.j > cam.last_j:
-        activate_tiles(range(*out_view_i_range), (out_view_j[0],), False)
-        activate_tiles(range(*in_view_i_range), (in_view_j[1],), True)
-    elif cam.j < cam.last_j:
-        activate_tiles(range(*out_view_i_range), (out_view_j[1],), False)
-        activate_tiles(range(*in_view_i_range), (in_view_j[0],), True)
+        if cam.i > cam.last_i:
+            activate_tiles((out_view_i[1],), range(*out_view_j_range), False)
+            activate_tiles((in_view_i[0],), range(*in_view_j_range), True)
+        elif cam.i < cam.last_i:
+            activate_tiles((out_view_i[0],), range(*out_view_j_range), False)
+            activate_tiles((in_view_i[1],), range(*in_view_j_range), True)
 
-    if protagonist.effect:
-        try:
-            new_ani = effect.Effect(
-                img=r.attack_animations[protagonist.current], affinity=attack_affinities[protagonist.current],
-                x=protagonist.effect_x, y=protagonist.effect_y, group=foreground, batch=game_batch)
-            cam.initialise(new_ani)
-            animations.append(new_ani)
-        except AttributeError or TypeError:
-            pass
-        protagonist.effect = False
+        if cam.j > cam.last_j:
+            activate_tiles(range(*out_view_i_range), (out_view_j[0],), False)
+            activate_tiles(range(*in_view_i_range), (in_view_j[1],), True)
+        elif cam.j < cam.last_j:
+            activate_tiles(range(*out_view_i_range), (out_view_j[1],), False)
+            activate_tiles(range(*in_view_i_range), (in_view_j[0],), True)
 
-    protagonist.current = game_hud.current
+        if protagonist.effect:
+            try:
+                new_ani = effect.Effect(
+                    img=r.attack_animations[protagonist.current], affinity=attack_affinities[protagonist.current],
+                    x=protagonist.effect_x, y=protagonist.effect_y, group=foreground, batch=game_batch)
+                cam.initialise(new_ani)
+                animations.append(new_ani)
+            except AttributeError or TypeError:
+                pass
+            protagonist.effect = False
 
-    for dy_obj in [protagonist] + ai_characters:
-        dy_obj.update_obj(dt)
-        dy_obj.check_map_bounds(map_obj.width, map_obj.height)
-        dy_obj.check_traversability(tile_objs, env_obj_dict, max_width_env_imgs, max_height_env_imgs)
+        protagonist.current = game_hud.current
 
-    # ai_chars_dict = make_ai_chars_dict(ai_characters)
+        for dy_obj in [protagonist] + ai_characters:
+            dy_obj.update_obj(dt)
+            dy_obj.check_map_bounds(map_obj.width, map_obj.height)
+            dy_obj.check_traversability(tile_objs, env_obj_dict, max_width_env_imgs, max_height_env_imgs)
 
-    for ani in animations:
-        if ani.remove:
-            animations.remove(ani)
+        # ai_chars_dict = make_ai_chars_dict(ai_characters)
 
-    for dude in ai_characters:
         for ani in animations:
-            dude.check_attack(ani)
-        if dude.remove:
-            dude.delete()
-            ai_characters.remove(dude)
-        if protagonist.check_collision(dude) and not protagonist.remove:
-            effect.Effect(img=r.smoke, x=protagonist.x, y=protagonist.y, group=foreground, batch=game_batch)
-            protagonist.remove = True
-            protagonist.visible = False
+            if ani.remove:
+                animations.remove(ani)
 
-    for env_obj in env_obj_dict.values():
-        for ani in animations:
-            env_obj.check_interaction(ani)
+        for dude in ai_characters:
+            for ani in animations:
+                dude.check_attack(ani)
+            if dude.remove:
+                dude.delete()
+                ai_characters.remove(dude)
+            if protagonist.check_collision(dude) and not protagonist.remove:
+                effect.Effect(img=r.smoke, x=protagonist.x, y=protagonist.y, group=foreground, batch=game_batch)
+                protagonist.remove = True
+                protagonist.visible = False
 
-    for object_ in active_tiles + list(env_obj_dict.values()) + ai_characters + animations:
-        cam.apply(object_)
+        for env_obj in env_obj_dict.values():
+            for ani in animations:
+                env_obj.check_interaction(ani)
+
+        for object_ in active_tiles + list(env_obj_dict.values()) + ai_characters + animations:
+            cam.apply(object_)
 
 
 def main():
+    game_window.open_main_menu()
     pyglet.clock.schedule_interval(update, 1 / p.UPS)
     pyglet.app.run()
 
