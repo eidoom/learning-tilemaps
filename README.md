@@ -18,3 +18,9 @@ mouse, or scrolling the mouse wheel. Deselect by pressing Q on the keyboard. Cli
 the interaction. It will only work within a small interaction range (i.e. distances from your character).  
 
 * If you are touched by an enemy, you will die. Restart the game by closing the window and running the program again.
+
+## TODO
+
+* env_objs should only have logic calculated and be rendered if they are on screen. Load all in the window at start up
+and add new ones as they come on screen, as with tiles?
+* Similarly for mobiles?
