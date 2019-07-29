@@ -61,7 +61,7 @@ scale = p.TILE_SIZE / r.tile_imgs[0].width
 for tile in tile_objs:
     tile.scale = scale
 
-cam = camera.Camera(game_window.width, game_window.height, map_obj.width, map_obj.height)
+cam = camera.Camera(game_window, map_obj.width, map_obj.height, game_batch)
 
 
 def generate_position():
@@ -101,49 +101,8 @@ animations = []
 
 attack_affinities = ["fire", "electricity", "ice"]
 
-cam.update(protagonist)
-
-
-def get_tile(i_, j_):
-    return tile_objs[util.nested_ref_to_list_ref(i_, j_)]
-
-
-active_tiles = []
-
-
-def activate_tiles(i_range, j_range, active):
-    batch = game_batch if active else None
-    for i_ in [cam.i - a for a in i_range]:
-        for j_ in [cam.j + b for b in j_range]:
-            try:
-                tile_ = get_tile(i_, j_)
-                tile_.batch = batch
-                if active:
-                    active_tiles.append(tile_)
-                else:
-                    try:
-                        active_tiles.remove(tile_)
-                    except ValueError:
-                        pass
-            except IndexError:
-                pass
-
-
-out_view_i = [-1, game_window.tile_height + 1]
-out_view_j = [-1, game_window.tile_width + 1]
-in_view_i = [0, game_window.tile_height]
-in_view_j = [0, game_window.tile_width]
-
-out_view_i_range = out_view_i.copy()
-out_view_i_range[1] += 1
-out_view_j_range = out_view_j.copy()
-out_view_j_range[1] += 1
-in_view_i_range = in_view_i.copy()
-in_view_i_range[1] += 1
-in_view_j_range = in_view_j.copy()
-in_view_j_range[1] += 1
-
-activate_tiles(range(*in_view_i_range), range(*in_view_j_range), True)
+cam.update(protagonist, tile_objs)
+cam.activate_tiles(tile_objs, range(*cam.in_view_i_range), range(*cam.in_view_j_range), True)
 
 
 def update(dt):
@@ -152,21 +111,7 @@ def update(dt):
 
     else:
         if not protagonist.remove:
-            cam.update(protagonist)
-
-        if cam.i > cam.last_i:
-            activate_tiles((out_view_i[1],), range(*out_view_j_range), False)
-            activate_tiles((in_view_i[0],), range(*in_view_j_range), True)
-        elif cam.i < cam.last_i:
-            activate_tiles((out_view_i[0],), range(*out_view_j_range), False)
-            activate_tiles((in_view_i[1],), range(*in_view_j_range), True)
-
-        if cam.j > cam.last_j:
-            activate_tiles(range(*out_view_i_range), (out_view_j[0],), False)
-            activate_tiles(range(*in_view_i_range), (in_view_j[1],), True)
-        elif cam.j < cam.last_j:
-            activate_tiles(range(*out_view_i_range), (out_view_j[1],), False)
-            activate_tiles(range(*in_view_i_range), (in_view_j[0],), True)
+            cam.update(protagonist, tile_objs)
 
         if protagonist.effect:
             try:
@@ -207,7 +152,7 @@ def update(dt):
             for ani in animations:
                 env_obj.check_interaction(ani)
 
-        for object_ in active_tiles + list(env_obj_dict.values()) + ai_characters + animations:
+        for object_ in cam.active_tiles + list(env_obj_dict.values()) + ai_characters + animations:
             cam.apply(object_)
 
 
