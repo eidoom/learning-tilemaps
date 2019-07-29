@@ -14,12 +14,12 @@ traversability = {r.red_tile: False, r.green_tile: True, r.blue_tile: False, r.b
 map_obj = map.Map(tile_imgs=r.tile_imgs, weights=weights, map_tile_width=p.MAP_TILE_WIDTH,
                   map_tile_height=p.MAP_TILE_HEIGHT, tile_size=p.TILE_SIZE)
 
+game_batch = pyglet.graphics.Batch()
+
 game_window = window.GameWindow(caption=p.GAME_NAME, fullscreen=p.FULLSCREEN,
                                 max_width=map_obj.width, max_height=map_obj.height,
                                 min_size=p.TILE_SIZE * 3, icon=r.player_image, tile_size=p.TILE_SIZE,
-                                width=p.WINDOW_WIDTH, height=p.WINDOW_HEIGHT)
-
-game_batch = pyglet.graphics.Batch()
+                                width=p.WINDOW_WIDTH, height=p.WINDOW_HEIGHT, batch=game_batch)
 
 background = pyglet.graphics.OrderedGroup(0)
 foreground = pyglet.graphics.OrderedGroup(1)
@@ -78,7 +78,6 @@ for _ in range(3 * p.MAP_TILE_SCALE):
     x, y = generate_position()
     ai_characters.append(char_green.CharGreen(map_x=x, map_y=y, group=foreground, batch=game_batch))
 
-
 # def make_ai_chars_dict(ai_chars_list):
 #     return {(int(char.x), int(char.y)): char for char in ai_chars_list}
 
@@ -99,17 +98,6 @@ for handler in [item for row in [getattr(obj, "event_handlers") for obj in (prot
 #     cam.apply(protagonist)
 
 animations = []
-
-
-@game_window.event
-def on_draw():
-    game_window.clear()
-    if game_window.overlay:
-        game_window.overlay.draw()
-    else:
-        game_batch.draw()
-        game_window.fps_display.draw()
-
 
 attack_affinities = ["fire", "electricity", "ice"]
 
