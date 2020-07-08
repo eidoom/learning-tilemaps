@@ -7,7 +7,7 @@
 * The `master` branch is the testing branch. The `stable` branch should be bug-free. The stable branch is recommended 
 for playing (reminder: switch to it with `git checkout stable`).
 
-* Run with `python3 main.py`.
+* Run with `./main.py`.
 
 ## Instructions for playing
 
