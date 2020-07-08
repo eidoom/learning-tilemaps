@@ -25,6 +25,8 @@ the interaction. It will only work within a small interaction range (i.e. small 
 
 Only you can free the land of the wicked ghouls that terrorise it!
 You have been divinely gifted with the power to stop these ethereal monsters!
+Be sure to smite with the appropriate spell!
+
 Return this place to its former pastoral glory!
 Just remember you can't swim!
 
