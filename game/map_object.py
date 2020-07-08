@@ -9,12 +9,12 @@ class MapObject(positional_object.PositionalObject):
 
     def check_interaction(self, other_obj):
         if self.check_collision(other_obj):
-            if other_obj.affinity is "ice":
+            if other_obj.affinity == "ice":
                 if self.image is resources.tree:
                     self.image = resources.tree_frozen
                 if self.image is resources.stone:
                     self.image = resources.stone_frozen
-            if other_obj.affinity is "fire":
+            if other_obj.affinity == "fire":
                 if self.image is resources.tree_frozen:
                     self.image = resources.tree
                 if self.image is resources.stone_frozen:
