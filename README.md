@@ -1,4 +1,4 @@
-# learning-tilemaps
+# [learning-tilemaps](https://github.com/eidoom/learning-tilemaps)
 
 ## Installation
 
