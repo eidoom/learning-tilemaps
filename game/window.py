@@ -4,7 +4,7 @@ from game import overlays
 
 
 class GameWindow(pyglet.window.Window):
-    def __init__(self, max_width, max_height, min_size, icon, tile_size, batch, *args, **kwargs):
+    def __init__(self, max_width, max_height, min_size, icon, tile_size, batch, show_fps, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.tile_size = tile_size
 
@@ -21,6 +21,7 @@ class GameWindow(pyglet.window.Window):
 
         self.overlay = None
 
+        self.show_fps = show_fps
         self.fps_display = pyglet.window.FPSDisplay(self)
 
     def on_draw(self):
@@ -29,7 +30,8 @@ class GameWindow(pyglet.window.Window):
             self.overlay.draw()
         else:
             self.batch.draw()
-            self.fps_display.draw()
+            if self.show_fps:
+                self.fps_display.draw()
 
     def set_overlay(self, new_overlay):
         if self.overlay:

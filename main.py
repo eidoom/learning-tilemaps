@@ -19,7 +19,7 @@ game_batch = pyglet.graphics.Batch()
 game_window = window.GameWindow(caption=p.GAME_NAME, fullscreen=p.FULLSCREEN,
                                 max_width=map_obj.width, max_height=map_obj.height,
                                 min_size=p.TILE_SIZE * 3, icon=r.player_image, tile_size=p.TILE_SIZE,
-                                width=p.WINDOW_WIDTH, height=p.WINDOW_HEIGHT, batch=game_batch)
+                                width=p.WINDOW_WIDTH, height=p.WINDOW_HEIGHT, batch=game_batch, show_fps=p.SHOW_FPS)
 
 background = pyglet.graphics.OrderedGroup(0)
 foreground = pyglet.graphics.OrderedGroup(1)
