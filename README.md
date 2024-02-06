@@ -2,7 +2,7 @@
 
 ## Installation
 
-* Needs `Python>=3.6` and Python package `pyglet`. 
+* Needs `Python` `>=3.6` `<=3.11` and Python package `pyglet`. 
   With `Python` installed, just `source sourceme` to setup a virtual environment with the supported version of `pyglet`.
 
 * The `master` branch is the testing branch. 
