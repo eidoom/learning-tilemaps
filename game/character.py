@@ -41,15 +41,25 @@ class Character(positional_object.PositionalObject):
     #
     #     return objs
 
-    def find_near_objs_bottom_left_anchor(self, obj_dict, obj_max_width, obj_max_height):
+    def find_near_objs_bottom_left_anchor(
+        self, obj_dict, obj_max_width, obj_max_height
+    ):
         objs = []
 
-        for x in [int(self.col_x()) + xx for xx in
-                  range(-int(self.half_width + obj_max_width) // self.col_res,
-                        self.half_width // self.col_res + 1)]:
-            for y in [int(self.col_y()) + yy for yy in
-                      range(-int(self.half_height + obj_max_height) // self.col_res,
-                            self.half_height // self.col_res + 1)]:
+        for x in [
+            int(self.col_x()) + xx
+            for xx in range(
+                -int(self.half_width + obj_max_width) // self.col_res,
+                self.half_width // self.col_res + 1,
+            )
+        ]:
+            for y in [
+                int(self.col_y()) + yy
+                for yy in range(
+                    -int(self.half_height + obj_max_height) // self.col_res,
+                    self.half_height // self.col_res + 1,
+                )
+            ]:
                 try:
                     objs.append(obj_dict[(x, y)])
                 except KeyError:
@@ -58,7 +68,6 @@ class Character(positional_object.PositionalObject):
         return objs
 
     def check_traversability(self, tile_objs, env_obj_dict, max_width, max_height):
-
         centre_i, centre_j = util.pixels_to_tiles(self.map_x, self.map_y)
 
         tiles = []
@@ -76,7 +85,9 @@ class Character(positional_object.PositionalObject):
         for j in [centre_j + jj for jj in (-1, 1)]:
             add_tile(centre_i, j)
 
-        env_objs = self.find_near_objs_bottom_left_anchor(env_obj_dict, max_width, max_height)
+        env_objs = self.find_near_objs_bottom_left_anchor(
+            env_obj_dict, max_width, max_height
+        )
 
         for obj in tiles + env_objs:
             if not obj.traversable:
@@ -86,7 +97,6 @@ class Character(positional_object.PositionalObject):
                 top = obj.map_y + obj.height + self.half_height
 
                 if left < self.map_x < right and bottom < self.map_y < top:
-
                     border = 10
                     if bottom + border < self.map_y < top - border:
                         if self.map_x < obj.map_x + obj.half_width:
@@ -101,7 +111,9 @@ class Character(positional_object.PositionalObject):
                             self.map_y = top
 
     def check_attack(self, attack):
-        if attack.affinity is self.affinity_wheel[self.affinity] and self.check_collision(attack):
+        if attack.affinity is self.affinity_wheel[
+            self.affinity
+        ] and self.check_collision(attack):
             self.remove = True
 
 

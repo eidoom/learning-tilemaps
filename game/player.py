@@ -7,7 +7,9 @@ class Player(character.Character):
     def __init__(self, c_img, l_img, r_img, c_ani, l_ani, r_ani, *args, **kwargs):
         self.walking_speed = 100
         self.running_speed = self.walking_speed * 2
-        super().__init__(img=c_img, mvmt_spd=self.walking_speed, affinity=None, *args, **kwargs)
+        super().__init__(
+            img=c_img, mvmt_spd=self.walking_speed, affinity=None, *args, **kwargs
+        )
 
         self.key_handler = pyglet.window.key.KeyStateHandler()
         self.event_handlers = [self, self.key_handler]
@@ -17,10 +19,12 @@ class Player(character.Character):
             "left": "A",
             "right": "D",
             "down": "S",
-            "run": "LSHIFT"
+            "run": "LSHIFT",
         }
         self.control = {
-            dict_key: getattr(pyglet.window.key, dict_value) for dict_key, dict_value in controls_raw.items()}
+            dict_key: getattr(pyglet.window.key, dict_value)
+            for dict_key, dict_value in controls_raw.items()
+        }
 
         self.c_img = c_img
         self.l_img = l_img

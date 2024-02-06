@@ -2,7 +2,16 @@ import pyglet
 
 
 class HUD:
-    def __init__(self, hud_batch, hud_groups, inv_slot_img, inv_select_img, inv_current_img, middle, item_imgs):
+    def __init__(
+        self,
+        hud_batch,
+        hud_groups,
+        inv_slot_img,
+        inv_select_img,
+        inv_current_img,
+        middle,
+        item_imgs,
+    ):
         self.hud_batch = hud_batch
         self.hud_groups = hud_groups
         self.inv_slot_img = inv_slot_img
@@ -19,7 +28,10 @@ class HUD:
         # Currently make_slot() logic requires odd number of slots
         self.number_slots = len(self.item_imgs)
         self.bar_half_width = self.number_slots // 2
-        self.slots = [self.make_piece(index, self.inv_slot_img, layer=0) for index in range(self.number_slots)]
+        self.slots = [
+            self.make_piece(index, self.inv_slot_img, layer=0)
+            for index in range(self.number_slots)
+        ]
 
         self.current = None
         try:
@@ -28,19 +40,29 @@ class HUD:
             pass
         self.highlighted = None
 
-        self.num_keys = [getattr(pyglet.window.key, f"_{x}") for x in range(1, self.number_slots + 1)]
+        self.num_keys = [
+            getattr(pyglet.window.key, f"_{x}") for x in range(1, self.number_slots + 1)
+        ]
         self.slot_dic = {num_key: num for num, num_key in enumerate(self.num_keys)}
         self.sheath = pyglet.window.key.Q
 
-        self.items = [self.make_piece(i, item_img, layer=1) for i, item_img in enumerate(self.item_imgs) if item_img]
+        self.items = [
+            self.make_piece(i, item_img, layer=1)
+            for i, item_img in enumerate(self.item_imgs)
+            if item_img
+        ]
 
     def shift(self, i):
         return range(-self.bar_half_width, self.bar_half_width + 1)[i] * self.slot_width
 
     def make_piece(self, number, img, layer=0):
         return pyglet.sprite.Sprite(
-            img=img, x=self.middle + self.shift(number),
-            y=self.slot_half_width, batch=self.hud_batch, group=self.hud_groups[layer])
+            img=img,
+            x=self.middle + self.shift(number),
+            y=self.slot_half_width,
+            batch=self.hud_batch,
+            group=self.hud_groups[layer],
+        )
 
     def assign_slot(self, number, slot_img):
         try:

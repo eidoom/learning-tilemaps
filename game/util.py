@@ -24,7 +24,9 @@ def distance(point_1=(0, 0), point_2=(0, 0)):
 
 
 def get_max_dims(img_list):
-    return [max([getattr(img, attr) for img in img_list]) for attr in ("width", "height")]
+    return [
+        max([getattr(img, attr) for img in img_list]) for attr in ("width", "height")
+    ]
 
 
 if __name__ == "__main__":

@@ -4,7 +4,18 @@ from game import overlays
 
 
 class GameWindow(pyglet.window.Window):
-    def __init__(self, max_width, max_height, min_size, icon, tile_size, batch, show_fps, *args, **kwargs):
+    def __init__(
+        self,
+        max_width,
+        max_height,
+        min_size,
+        icon,
+        tile_size,
+        batch,
+        show_fps,
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.tile_size = tile_size
 

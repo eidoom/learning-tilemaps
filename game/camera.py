@@ -76,18 +76,34 @@ class Camera:
         self.i, self.j = util.pixels_to_tiles(self.x, self.y)
 
         if self.i > self.last_i:
-            self.activate_tiles(tiles, (self.out_view_i[1],), range(*self.out_view_j_range), False)
-            self.activate_tiles(tiles, (self.in_view_i[0],), range(*self.in_view_j_range), True)
+            self.activate_tiles(
+                tiles, (self.out_view_i[1],), range(*self.out_view_j_range), False
+            )
+            self.activate_tiles(
+                tiles, (self.in_view_i[0],), range(*self.in_view_j_range), True
+            )
         elif self.i < self.last_i:
-            self.activate_tiles(tiles, (self.out_view_i[0],), range(*self.out_view_j_range), False)
-            self.activate_tiles(tiles, (self.in_view_i[1],), range(*self.in_view_j_range), True)
+            self.activate_tiles(
+                tiles, (self.out_view_i[0],), range(*self.out_view_j_range), False
+            )
+            self.activate_tiles(
+                tiles, (self.in_view_i[1],), range(*self.in_view_j_range), True
+            )
 
         if self.j > self.last_j:
-            self.activate_tiles(tiles, range(*self.out_view_i_range), (self.out_view_j[0],), False)
-            self.activate_tiles(tiles, range(*self.in_view_i_range), (self.in_view_j[1],), True)
+            self.activate_tiles(
+                tiles, range(*self.out_view_i_range), (self.out_view_j[0],), False
+            )
+            self.activate_tiles(
+                tiles, range(*self.in_view_i_range), (self.in_view_j[1],), True
+            )
         elif self.j < self.last_j:
-            self.activate_tiles(tiles, range(*self.out_view_i_range), (self.out_view_j[1],), False)
-            self.activate_tiles(tiles, range(*self.in_view_i_range), (self.in_view_j[0],), True)
+            self.activate_tiles(
+                tiles, range(*self.out_view_i_range), (self.out_view_j[1],), False
+            )
+            self.activate_tiles(
+                tiles, range(*self.in_view_i_range), (self.in_view_j[0],), True
+            )
 
 
 if __name__ == "__main__":

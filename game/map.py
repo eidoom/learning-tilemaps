@@ -29,15 +29,25 @@ class Map:
         self.tile_map = self.generate_random_map()
 
     def generate_lawn(self):
-        return [[self.green for _ in range(self.map_tile_width)] for _ in range(self.map_tile_height)]
+        return [
+            [self.green for _ in range(self.map_tile_width)]
+            for _ in range(self.map_tile_height)
+        ]
 
     def generate_random_map(self):
-        tile_map = [[choices(self.tile_imgs, weights=self.weights)[0] for _ in range(self.map_tile_width)]
-                    for _ in range(self.map_tile_height)]
+        tile_map = [
+            [
+                choices(self.tile_imgs, weights=self.weights)[0]
+                for _ in range(self.map_tile_width)
+            ]
+            for _ in range(self.map_tile_height)
+        ]
         tile_map[self.map_tile_half_height][self.map_tile_half_width] = self.green
         tile_map[self.map_tile_half_height][self.map_tile_half_width + 1] = self.green
         tile_map[self.map_tile_half_height - 1][self.map_tile_half_width] = self.green
-        tile_map[self.map_tile_half_height - 1][self.map_tile_half_width + 1] = self.green
+        tile_map[self.map_tile_half_height - 1][
+            self.map_tile_half_width + 1
+        ] = self.green
 
         for i in range(self.map_tile_height):
             for j in range(self.map_tile_width):

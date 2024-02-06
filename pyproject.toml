@@ -1,0 +1,17 @@
+[project]
+name = "learning-tilemaps"
+version = "0.1.0"
+description = "A simple demo made with Pyglet"
+authors = [
+    {name = "Ryan Moodie"},
+]
+dependencies = [
+    "pyglet>=2.0.10",
+]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+
+
+[tool.pdm]
+distribution = false

@@ -2,14 +2,9 @@
 
 ## Installation
 
-* Needs `Python` `>=3.6` `<=3.11` and Python package `pyglet`. 
-  With `Python` installed, just `source sourceme` to setup a virtual environment with the supported version of `pyglet`.
-
-* The `master` branch is the testing branch. 
-  The `stable` branch should be bug-free. 
-  `master` should be fine for playing, but if there're any problems, please report them on the [bug tracker](https://github.com/eidoom/learning-tilemaps/issues) and use `stable` for now (reminder: switch to this branch with `git checkout stable`).
-
-* Run with `./main.py`.
+* Dependencies handled by [`pdm`](https://pdm-project.org/latest/).
+* Install with `pdm install`.
+* Run with `pdm run ./main.py`.
 
 ## Instructions for playing
 
